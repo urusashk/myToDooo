@@ -1,0 +1,135 @@
+<UserControl x:Class="FocusFlow.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignHeight="680" d:DesignWidth="920">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Width="600" HorizontalAlignment="Left">
+            <!-- Appearance & Theme Card -->
+            <Border Style="{StaticResource CardBorderStyle}" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Appearance &amp; Theme" Style="{StaticResource Heading2}" Margin="0,0,0,16"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Text="Application Theme" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Switch between Dark and Light mode interface" Style="{StaticResource SubText}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Content="🌙 Dark Mode" Style="{StaticResource SecondaryButtonStyle}" 
+                                    Command="{Binding ToggleThemeCommand}" CommandParameter="Dark" Padding="14,8" Margin="0,0,8,0"/>
+                            <Button Content="☀️ Light Mode" Style="{StaticResource SecondaryButtonStyle}" 
+                                    Command="{Binding ToggleThemeCommand}" CommandParameter="Light" Padding="14,8"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Pomodoro Durations Card -->
+            <Border Style="{StaticResource CardBorderStyle}" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Timer Durations" Style="{StaticResource Heading2}" Margin="0,0,0,16"/>
+
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="120"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Text="Focus Session Duration" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Length of focus work interval (minutes)" Style="{StaticResource SubText}"/>
+                        </StackPanel>
+                        <TextBox Grid.Column="1" Text="{Binding Settings.FocusDurationMinutes, UpdateSourceTrigger=PropertyChanged}" Height="36"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="120"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Text="Short Break Duration" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Rest duration between focus sessions" Style="{StaticResource SubText}"/>
+                        </StackPanel>
+                        <TextBox Grid.Column="1" Text="{Binding Settings.ShortBreakMinutes, UpdateSourceTrigger=PropertyChanged}" Height="36"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="120"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Text="Long Break Duration" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Extended break duration after completed cycle" Style="{StaticResource SubText}"/>
+                        </StackPanel>
+                        <TextBox Grid.Column="1" Text="{Binding Settings.LongBreakMinutes, UpdateSourceTrigger=PropertyChanged}" Height="36"/>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="120"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Text="Long Break Interval" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Number of focus sessions before long break" Style="{StaticResource SubText}"/>
+                        </StackPanel>
+                        <TextBox Grid.Column="1" Text="{Binding Settings.LongBreakInterval, UpdateSourceTrigger=PropertyChanged}" Height="36"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Notifications & Audio Card -->
+            <Border Style="{StaticResource CardBorderStyle}" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Notifications &amp; Alerts" Style="{StaticResource Heading2}" Margin="0,0,0,16"/>
+
+                    <CheckBox IsChecked="{Binding Settings.NotificationsEnabled}" Margin="0,0,0,12">
+                        <StackPanel Margin="6,0,0,0">
+                            <TextBlock Text="Enable Windows Desktop Notifications" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Show balloon alerts when focus sessions or breaks complete" Style="{StaticResource SubText}"/>
+                        </StackPanel>
+                    </CheckBox>
+
+                    <CheckBox IsChecked="{Binding Settings.SoundEnabled}" Margin="0,0,0,12">
+                        <StackPanel Margin="6,0,0,0">
+                            <TextBlock Text="Enable Audio Sounds" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Play sound notifications upon session finish" Style="{StaticResource SubText}"/>
+                        </StackPanel>
+                    </CheckBox>
+
+                    <CheckBox IsChecked="{Binding Settings.AutoStartBreaks}" Margin="0,0,0,12">
+                        <StackPanel Margin="6,0,0,0">
+                            <TextBlock Text="Auto-start Break Timers" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Automatically start break timer when focus session finishes" Style="{StaticResource SubText}"/>
+                        </StackPanel>
+                    </CheckBox>
+
+                    <CheckBox IsChecked="{Binding Settings.AutoStartPomodoros}">
+                        <StackPanel Margin="6,0,0,0">
+                            <TextBlock Text="Auto-start Focus Timers" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Automatically start next focus timer when break finishes" Style="{StaticResource SubText}"/>
+                        </StackPanel>
+                    </CheckBox>
+                </StackPanel>
+            </Border>
+
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal">
+                <Button Content="💾 Save Settings" Style="{StaticResource PrimaryButtonStyle}" 
+                        Command="{Binding SaveSettingsCommand}" Padding="24,10" Margin="0,0,12,0"/>
+
+                <Button Content="Restore Defaults" Style="{StaticResource SecondaryButtonStyle}" 
+                        Command="{Binding ResetDefaultsCommand}" Padding="16,10"/>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

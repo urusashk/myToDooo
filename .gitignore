@@ -1,0 +1,17 @@
+# Build & Binaries
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Database & OS generated
+*.db
+*.sqlite
+.DS_Store
+Thumbs.db
