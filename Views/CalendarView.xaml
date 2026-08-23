@@ -6,76 +6,162 @@
              mc:Ignorable="d" d:DesignHeight="680" d:DesignWidth="920">
 
     <Grid>
-        <Grid.RowDefinitions>
-            <!-- Calendar Navigation Header -->
-            <RowDefinition Height="Auto"/>
+        <Grid.ColumnDefinitions>
+            <!-- Main Monthly Grid -->
+            <ColumnDefinition Width="*"/>
+            <!-- Sidebar for Overdue & Upcoming -->
+            <ColumnDefinition Width="280"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Main Calendar Section -->
+        <Grid Grid.Column="0" Margin="0,0,16,0">
+            <Grid.RowDefinitions>
+                <!-- Navigation Header -->
+                <RowDefinition Height="Auto"/>
+                <!-- Days of Week Header -->
+                <RowDefinition Height="Auto"/>
+                <!-- Grid Days -->
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Navigation Header -->
+            <Border Grid.Row="0" Style="{StaticResource CardBorderStyle}" Padding="16,12" Margin="0,0,0,14">
+                <DockPanel LastChildFill="False">
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                        <Button Content="◀" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding PreviousMonthCommand}" Padding="10,6" Margin="0,0,6,0"/>
+                        <TextBlock Text="{Binding CurrentMonthYearHeader}" Style="{StaticResource Heading2}" VerticalAlignment="Center" Margin="12,0"/>
+                        <Button Content="▶" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding NextMonthCommand}" Padding="10,6" Margin="6,0,0,0"/>
+                    </StackPanel>
+
+                    <Button DockPanel.Dock="Right" Content="Today" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding TodayCommand}" Padding="16,6"/>
+                </DockPanel>
+            </Border>
+
             <!-- Days of Week Header -->
-            <RowDefinition Height="Auto"/>
-            <!-- Grid Days -->
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+            <UniformGrid Grid.Row="1" Columns="7" Margin="0,0,0,8">
+                <TextBlock Text="Sun" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Mon" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Tue" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Wed" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Thu" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Fri" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Sat" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+            </UniformGrid>
 
-        <!-- Navigation Header -->
-        <Border Grid.Row="0" Style="{StaticResource CardBorderStyle}" Padding="16,12" Margin="0,0,0,16">
-            <DockPanel LastChildFill="False">
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                    <Button Content="◀" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding PreviousMonthCommand}" Padding="10,6" Margin="0,0,6,0"/>
-                    <TextBlock Text="{Binding CurrentMonthYearHeader}" Style="{StaticResource Heading2}" VerticalAlignment="Center" Margin="12,0"/>
-                    <Button Content="▶" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding NextMonthCommand}" Padding="10,6" Margin="6,0,0,0"/>
-                </StackPanel>
+            <!-- Calendar Month Grid -->
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding Days}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="7"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!-- Clickable Day Cell -->
+                            <Border Background="#1E293B" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="2" Padding="6" MinHeight="90">
+                                <Border.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" 
+                                                  Command="{Binding DataContext.CreateTaskOnDateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                  CommandParameter="{Binding}"/>
+                                </Border.InputBindings>
+                                <StackPanel>
+                                    <DockPanel LastChildFill="False">
+                                        <TextBlock Text="{Binding DayNumber}" FontSize="13" FontWeight="Bold" 
+                                                   Foreground="{StaticResource TextPrimaryBrush}" DockPanel.Dock="Left"/>
+                                        <!-- Today Badge -->
+                                        <Border Background="{StaticResource PrimaryAccentBrush}" CornerRadius="4" Padding="4,1" 
+                                                DockPanel.Dock="Right" Visibility="{Binding IsToday, Converter={StaticResource BoolToVisConverter}}">
+                                            <TextBlock Text="TODAY" FontSize="8" FontWeight="Bold" Foreground="White"/>
+                                        </Border>
+                                    </DockPanel>
 
-                <Button DockPanel.Dock="Right" Content="Today" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding TodayCommand}" Padding="16,6"/>
-            </DockPanel>
-        </Border>
+                                    <!-- Day Tasks List -->
+                                    <ItemsControl ItemsSource="{Binding Tasks}" Margin="0,4,0,0">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <!-- Clickable Task Badge inside Day Cell -->
+                                                <Border Background="{Binding PriorityColor}" CornerRadius="4" Padding="6,3" Margin="0,2">
+                                                    <Border.InputBindings>
+                                                        <MouseBinding MouseAction="LeftClick" 
+                                                                      Command="{Binding DataContext.EditTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                                      CommandParameter="{Binding}"/>
+                                                    </Border.InputBindings>
+                                                    <TextBlock Text="{Binding Title}" FontSize="11" FontWeight="SemiBold" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
 
-        <!-- Days of Week Header -->
-        <UniformGrid Grid.Row="1" Columns="7" Margin="0,0,0,8">
-            <TextBlock Text="Sun" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
-            <TextBlock Text="Mon" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
-            <TextBlock Text="Tue" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
-            <TextBlock Text="Wed" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
-            <TextBlock Text="Thu" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
-            <TextBlock Text="Fri" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
-            <TextBlock Text="Sat" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
-        </UniformGrid>
+        <!-- Sidebar Panels -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Overdue Tasks Section -->
+                <Border Style="{StaticResource CardBorderStyle}" Padding="16">
+                    <StackPanel>
+                        <DockPanel LastChildFill="False" Margin="0,0,0,12">
+                            <TextBlock Text="⚠️ Overdue Tasks" Style="{StaticResource Heading2}" Foreground="{StaticResource DangerBrush}" DockPanel.Dock="Left"/>
+                            <Border Background="{StaticResource DangerBrush}" CornerRadius="10" Padding="8,2" DockPanel.Dock="Right">
+                                <TextBlock Text="{Binding OverdueTasks.Count}" FontSize="12" FontWeight="Bold" Foreground="White"/>
+                            </Border>
+                        </DockPanel>
 
-        <!-- Calendar Month Grid -->
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding Days}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Columns="7"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Background="#1E293B" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="3" Padding="8" MinHeight="90">
-                            <StackPanel>
-                                <DockPanel LastChildFill="False">
-                                    <TextBlock Text="{Binding DayNumber}" FontSize="14" FontWeight="Bold" 
-                                               Foreground="{StaticResource TextPrimaryBrush}" DockPanel.Dock="Left"/>
-                                    <!-- Today Badge -->
-                                    <Border Background="{StaticResource PrimaryAccentBrush}" CornerRadius="4" Padding="4,1" 
-                                            DockPanel.Dock="Right" Visibility="{Binding IsToday, Converter={StaticResource BoolToVisConverter}}">
-                                        <TextBlock Text="TODAY" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                        <ItemsControl ItemsSource="{Binding OverdueTasks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#0F172A" BorderBrush="{StaticResource DangerBrush}" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="0,0,0,6">
+                                        <Border.InputBindings>
+                                            <MouseBinding MouseAction="LeftClick" 
+                                                          Command="{Binding DataContext.EditTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                          CommandParameter="{Binding}"/>
+                                        </Border.InputBindings>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                                <TextBlock Text="Due: " FontSize="11" Foreground="{StaticResource DangerBrush}"/>
+                                                <TextBlock Text="{Binding DueDateDisplay}" FontSize="11" Foreground="{StaticResource DangerBrush}" FontWeight="Bold"/>
+                                            </StackPanel>
+                                        </StackPanel>
                                     </Border>
-                                </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
 
-                                <!-- Day Tasks List -->
-                                <ItemsControl ItemsSource="{Binding Tasks}" Margin="0,6,0,0">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Border Background="#0F172A" CornerRadius="4" Padding="4,2" Margin="0,1">
-                                                <TextBlock Text="{Binding Title}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                <!-- Upcoming Reminders Panel -->
+                <Border Style="{StaticResource CardBorderStyle}" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="📅 Next 7 Days" Style="{StaticResource Heading2}" Margin="0,0,0,12"/>
+                        <ItemsControl ItemsSource="{Binding UpcomingTasks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,8">
+                                        <Border.InputBindings>
+                                            <MouseBinding MouseAction="LeftClick" 
+                                                          Command="{Binding DataContext.EditTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                          CommandParameter="{Binding}"/>
+                                        </Border.InputBindings>
+                                        <Grid>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                <TextBlock Text="{Binding DueDateDisplay}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </UserControl>

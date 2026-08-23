@@ -21,6 +21,7 @@ namespace FocusFlow.ViewModels
         private TaskPriority _quickTaskPriority = TaskPriority.Medium;
 
         private ObservableCollection<TaskItem> _todayTasks = new();
+        private ObservableCollection<TaskItem> _overdueTasks = new();
         private ObservableCollection<TaskItem> _upcomingTasks = new();
         private ObservableCollection<PomodoroSession> _recentSessions = new();
         private ObservableCollection<Project> _projects = new();
@@ -73,6 +74,12 @@ namespace FocusFlow.ViewModels
         {
             get => _todayTasks;
             set => SetProperty(ref _todayTasks, value);
+        }
+
+        public ObservableCollection<TaskItem> OverdueTasks
+        {
+            get => _overdueTasks;
+            set => SetProperty(ref _overdueTasks, value);
         }
 
         public ObservableCollection<TaskItem> UpcomingTasks
@@ -131,10 +138,18 @@ namespace FocusFlow.ViewModels
                 QuickTaskProject = Projects.FirstOrDefault();
             }
 
-            // Load Today's Tasks
             var allTasks = db.GetTasks();
             var today = DateTime.Today;
 
+            // Load Overdue Tasks
+            var overdue = allTasks.Where(t => t.IsOverdue).OrderBy(t => t.DueDate).ToList();
+            OverdueTasks.Clear();
+            foreach (var t in overdue)
+            {
+                OverdueTasks.Add(t);
+            }
+
+            // Load Today's Tasks
             var todayList = allTasks.Where(t => t.DueDate.HasValue && t.DueDate.Value.Date == today || t.CreatedAt.Date == today && !t.IsCompleted).ToList();
             TodayTasks.Clear();
             foreach (var t in todayList)
@@ -188,8 +203,9 @@ namespace FocusFlow.ViewModels
             QuickTaskTitle = string.Empty;
             LoadDashboardData();
 
-            // Also refresh Tasks list
+            // Also refresh Tasks list and Calendar
             MainViewModel.Instance.TasksViewModel.LoadTasks();
+            MainViewModel.Instance.CalendarViewModel.BuildCalendar();
         }
 
         private void StartFocus()
@@ -218,6 +234,7 @@ namespace FocusFlow.ViewModels
                 task.IsCompleted = !task.IsCompleted;
                 DatabaseService.Instance.ToggleTaskCompletion(task.Id, task.IsCompleted);
                 LoadDashboardData();
+                MainViewModel.Instance.CalendarViewModel.BuildCalendar();
             }
         }
     }

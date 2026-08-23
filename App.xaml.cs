@@ -11,6 +11,9 @@ namespace FocusFlow
         {
             base.OnStartup(e);
 
+            // Start Background Reminder Engine
+            ReminderService.Instance.Start();
+
             NotificationService.Instance.InitializeSystemTray(
                 onOpenRequested: () =>
                 {
@@ -41,6 +44,7 @@ namespace FocusFlow
 
         protected override void OnExit(ExitEventArgs e)
         {
+            ReminderService.Instance.Stop();
             NotificationService.Instance.Dispose();
             base.OnExit(e);
         }

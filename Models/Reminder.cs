@@ -10,5 +10,6 @@ namespace FocusFlow.Models
         public DateTime ReminderDateTime { get; set; }
         public string Message { get; set; } = string.Empty;
         public bool IsTriggered { get; set; }
+        public RecurringPattern Recurrence { get; set; } = RecurringPattern.None;
     }
 }

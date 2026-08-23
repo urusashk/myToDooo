@@ -342,6 +342,9 @@ namespace FocusFlow.Data
             // Save Subtasks
             SaveSubtasks(taskId, task.Subtasks);
 
+            // Sync Task Reminder
+            SyncTaskReminder(taskId, task.Title, task.ReminderTime, task.Recurring);
+
             return taskId;
         }
 
@@ -416,6 +419,120 @@ namespace FocusFlow.Data
                 insertCmd.Parameters.AddWithValue("@IsCompleted", st.IsCompleted ? 1 : 0);
                 insertCmd.ExecuteNonQuery();
             }
+        }
+        #endregion
+
+        #region Reminders CRUD
+        public List<Reminder> GetPendingReminders()
+        {
+            var list = new List<Reminder>();
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT r.Id, r.TaskId, r.ReminderDateTime, r.Message, r.IsTriggered,
+                       COALESCE(t.Title, 'Task') AS TaskTitle,
+                       COALESCE(t.Recurring, 0) AS Recurrence
+                FROM Reminders r
+                LEFT JOIN Tasks t ON r.TaskId = t.Id
+                WHERE r.IsTriggered = 0 AND r.ReminderDateTime <= @Now;
+            ";
+            cmd.Parameters.AddWithValue("@Now", DateTime.Now.ToString("o"));
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new Reminder
+                {
+                    Id = reader.GetInt32(0),
+                    TaskId = reader.GetInt32(1),
+                    ReminderDateTime = DateTime.Parse(reader.GetString(2)),
+                    Message = reader.IsDBNull(3) ? "" : reader.GetString(3),
+                    IsTriggered = reader.GetInt32(4) == 1,
+                    TaskTitle = reader.GetString(5),
+                    Recurrence = (RecurringPattern)reader.GetInt32(6)
+                });
+            }
+            return list;
+        }
+
+        public void SaveReminder(Reminder reminder)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            if (reminder.Id == 0)
+            {
+                cmd.CommandText = @"
+                    INSERT INTO Reminders (TaskId, ReminderDateTime, Message, IsTriggered)
+                    VALUES (@TaskId, @ReminderDateTime, @Message, @IsTriggered);
+                ";
+            }
+            else
+            {
+                cmd.CommandText = @"
+                    UPDATE Reminders
+                    SET TaskId = @TaskId, ReminderDateTime = @ReminderDateTime, Message = @Message, IsTriggered = @IsTriggered
+                    WHERE Id = @Id;
+                ";
+                cmd.Parameters.AddWithValue("@Id", reminder.Id);
+            }
+
+            cmd.Parameters.AddWithValue("@TaskId", reminder.TaskId);
+            cmd.Parameters.AddWithValue("@ReminderDateTime", reminder.ReminderDateTime.ToString("o"));
+            cmd.Parameters.AddWithValue("@Message", reminder.Message ?? "");
+            cmd.Parameters.AddWithValue("@IsTriggered", reminder.IsTriggered ? 1 : 0);
+            cmd.ExecuteNonQuery();
+        }
+
+        public void MarkReminderTriggered(int reminderId)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "UPDATE Reminders SET IsTriggered = 1 WHERE Id = @Id;";
+            cmd.Parameters.AddWithValue("@Id", reminderId);
+            cmd.ExecuteNonQuery();
+        }
+
+        public void UpdateReminderDateTime(int reminderId, DateTime newDateTime)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "UPDATE Reminders SET ReminderDateTime = @ReminderDateTime, IsTriggered = 0 WHERE Id = @Id;";
+            cmd.Parameters.AddWithValue("@Id", reminderId);
+            cmd.Parameters.AddWithValue("@ReminderDateTime", newDateTime.ToString("o"));
+            cmd.ExecuteNonQuery();
+        }
+
+        public void SyncTaskReminder(int taskId, string taskTitle, DateTime? reminderTime, RecurringPattern recurrence)
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+
+            if (!reminderTime.HasValue)
+            {
+                cmd.CommandText = "DELETE FROM Reminders WHERE TaskId = @TaskId;";
+                cmd.Parameters.AddWithValue("@TaskId", taskId);
+                cmd.ExecuteNonQuery();
+                return;
+            }
+
+            cmd.CommandText = "SELECT Id FROM Reminders WHERE TaskId = @TaskId LIMIT 1;";
+            cmd.Parameters.AddWithValue("@TaskId", taskId);
+            var existingId = cmd.ExecuteScalar();
+
+            if (existingId != null && existingId != DBNull.Value)
+            {
+                cmd.CommandText = "UPDATE Reminders SET ReminderDateTime = @ReminderDateTime, Message = @Message, IsTriggered = 0 WHERE TaskId = @TaskId;";
+            }
+            else
+            {
+                cmd.CommandText = "INSERT INTO Reminders (TaskId, ReminderDateTime, Message, IsTriggered) VALUES (@TaskId, @ReminderDateTime, @Message, 0);";
+            }
+
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@TaskId", taskId);
+            cmd.Parameters.AddWithValue("@ReminderDateTime", reminderTime.Value.ToString("o"));
+            cmd.Parameters.AddWithValue("@Message", $"Task Reminder: {taskTitle}");
+            cmd.ExecuteNonQuery();
         }
         #endregion
 
