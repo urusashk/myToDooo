@@ -6,30 +6,51 @@
              mc:Ignorable="d" d:DesignHeight="680" d:DesignWidth="920">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel HorizontalAlignment="Center" Width="640">
-            <!-- Mode Switcher Tabs -->
-            <Border Style="{StaticResource CardBorderStyle}" Padding="8" Margin="0,0,0,28" HorizontalAlignment="Center">
+        <StackPanel HorizontalAlignment="Center" Width="680">
+            <!-- Mode Switcher & Test Mode Bar -->
+            <Border Style="{StaticResource CardBorderStyle}" Padding="8" Margin="0,0,0,24" HorizontalAlignment="Center">
                 <StackPanel Orientation="Horizontal">
                     <Button Content="🍅 Focus (25m)" Style="{StaticResource SecondaryButtonStyle}" 
-                            Command="{Binding SetModeFocusCommand}" Padding="20,10" Margin="0,0,4,0"/>
+                            Command="{Binding SetModeFocusCommand}" Padding="18,10" Margin="0,0,4,0"/>
                     <Button Content="☕ Short Break (5m)" Style="{StaticResource SecondaryButtonStyle}" 
-                            Command="{Binding SetModeShortBreakCommand}" Padding="20,10" Margin="0,0,4,0"/>
+                            Command="{Binding SetModeShortBreakCommand}" Padding="18,10" Margin="0,0,4,0"/>
                     <Button Content="🌴 Long Break (15m)" Style="{StaticResource SecondaryButtonStyle}" 
-                            Command="{Binding SetModeLongBreakCommand}" Padding="20,10"/>
+                            Command="{Binding SetModeLongBreakCommand}" Padding="18,10" Margin="0,0,8,0"/>
+
+                    <ToggleButton Content="⚡ 10s Test Mode" IsChecked="{Binding IsTestMode, Mode=TwoWay}" 
+                                  Padding="14,10" Foreground="{StaticResource WarningBrush}"/>
                 </StackPanel>
             </Border>
 
             <!-- Big Circular Timer Widget -->
-            <Border Width="340" Height="340" CornerRadius="170" Background="#1E293B" BorderBrush="{StaticResource PrimaryAccentBrush}" BorderThickness="8" Margin="0,0,0,32">
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBlock Text="{Binding TimerService.CurrentSessionType}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Center"/>
-                    <TextBlock Text="{Binding TimerService.TimeRemainingFormatted}" FontSize="72" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Center" Margin="0,8"/>
-                    <TextBlock Text="{Binding TimerService.State}" FontSize="14" Foreground="{StaticResource PrimaryAccentBrush}" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                </StackPanel>
+            <Border Width="340" Height="340" CornerRadius="170" Background="#1E293B" BorderBrush="{StaticResource PrimaryAccentBrush}" BorderThickness="8" Margin="0,0,0,28">
+                <Grid>
+                    <ProgressBar Value="{Binding TimerService.ProgressRatio, Mode=OneWay}" Maximum="1.0" Height="10" 
+                                 Foreground="{StaticResource PrimaryAccentBrush}" Background="Transparent" 
+                                 VerticalAlignment="Bottom" Margin="40,0,40,40"/>
+
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Border Background="{StaticResource PrimaryAccentBrush}" CornerRadius="12" Padding="12,4" HorizontalAlignment="Center" Margin="0,0,0,8">
+                            <TextBlock Text="{Binding TimerService.CurrentSessionType}" FontSize="14" FontWeight="Bold" Foreground="White"/>
+                        </Border>
+
+                        <TextBlock Text="{Binding TimerService.TimeRemainingFormatted, Mode=OneWay}" FontSize="72" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Center" Margin="0,4"/>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,0">
+                            <TextBlock Text="Status: " FontSize="13" Foreground="{StaticResource TextMutedBrush}"/>
+                            <TextBlock Text="{Binding TimerService.State}" FontSize="13" Foreground="{StaticResource SuccessBrush}" FontWeight="SemiBold"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,0">
+                            <TextBlock Text="Cycle Focus Sessions: " FontSize="12" Foreground="{StaticResource TextMutedBrush}"/>
+                            <TextBlock Text="{Binding TimerService.CompletedFocusSessionsCount}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
             </Border>
 
             <!-- Main Control Buttons -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,36">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,32">
                 <Button Content="▶ START" Style="{StaticResource PrimaryButtonStyle}" 
                         Command="{Binding StartCommand}" Padding="32,14" FontSize="16" Margin="0,0,12,0"/>
 
@@ -46,25 +67,34 @@
             <!-- Active Task Attachment Card -->
             <Border Style="{StaticResource CardBorderStyle}" Padding="24">
                 <StackPanel>
-                    <TextBlock Text="FOCUSING ON TASK" Style="{StaticResource SubText}" Margin="0,0,0,8"/>
-                    <ComboBox ItemsSource="{Binding AvailableTasks}" SelectedItem="{Binding SelectedTask}" 
-                              DisplayMemberPath="Title" Height="40" FontSize="14"/>
+                    <DockPanel LastChildFill="False" Margin="0,0,0,12">
+                        <TextBlock Text="TARGET FOCUS TASK" Style="{StaticResource SubText}" DockPanel.Dock="Left" VerticalAlignment="Center"/>
+                        <Button DockPanel.Dock="Right" Content="Refresh Tasks" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding LoadAvailableTasksCommand}" Padding="10,4" FontSize="11"/>
+                    </DockPanel>
 
-                    <Grid Margin="0,16,0,0">
+                    <ComboBox ItemsSource="{Binding AvailableTasks}" SelectedItem="{Binding SelectedTask}" 
+                              DisplayMemberPath="Title" Height="40" FontSize="14" Margin="0,0,0,16"/>
+
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding SelectedTask.Notes}" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"/>
-                            <TextBlock Text="{Binding SelectedTask.ProjectName, StringFormat='Project: {0}'}" FontSize="12" Foreground="{StaticResource PrimaryAccentBrush}" Margin="0,4,0,0"/>
+                            <TextBlock Text="{Binding SelectedTask.Notes}" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                <Border Background="{Binding SelectedTask.ProjectColor}" CornerRadius="4" Padding="6,2" Margin="0,0,8,0">
+                                    <TextBlock Text="{Binding SelectedTask.ProjectName}" FontSize="10" Foreground="White" FontWeight="Bold"/>
+                                </Border>
+                                <TextBlock Text="{Binding SelectedTask.DueDateDisplay, StringFormat='Due: {0}'}" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
+                            </StackPanel>
                         </StackPanel>
 
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="Pomodoros: " FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"/>
-                            <TextBlock Text="{Binding SelectedTask.CompletedPomodoros}" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                            <TextBlock Text="/" FontSize="14" Foreground="{StaticResource TextMutedBrush}"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                            <TextBlock Text="🍅 Completed: " FontSize="14" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Text="{Binding SelectedTask.CompletedPomodoros}" FontSize="14" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}"/>
+                            <TextBlock Text=" / " FontSize="14" Foreground="{StaticResource TextMutedBrush}"/>
                             <TextBlock Text="{Binding SelectedTask.EstimatedPomodoros}" FontSize="14" Foreground="{StaticResource TextMutedBrush}"/>
                         </StackPanel>
                     </Grid>

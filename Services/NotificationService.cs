@@ -1,63 +1,68 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using FocusFlow.Data;
 
 namespace FocusFlow.Services
 {
-    public class NotificationService
+    public class NotificationService : IDisposable
     {
         private static NotificationService? _instance;
         public static NotificationService Instance => _instance ??= new NotificationService();
 
         private NotifyIcon? _notifyIcon;
+        private Action? _onOpenRequested;
+        private Action? _onExitRequested;
 
         public void InitializeSystemTray(Action onOpenRequested, Action onExitRequested)
         {
-            if (_notifyIcon != null) return;
+            _onOpenRequested = onOpenRequested;
+            _onExitRequested = onExitRequested;
 
-            _notifyIcon = new NotifyIcon
+            if (_notifyIcon == null)
             {
-                Text = "FocusFlow - Pomodoro & Task Manager",
-                Icon = SystemIcons.Application,
-                Visible = true
-            };
+                _notifyIcon = new NotifyIcon
+                {
+                    Icon = SystemIcons.Application,
+                    Text = "FocusFlow - Pomodoro & Tasks",
+                    Visible = true
+                };
 
-            var contextMenu = new ContextMenuStrip();
-            contextMenu.Items.Add("Open FocusFlow", null, (s, e) => onOpenRequested?.Invoke());
-            contextMenu.Items.Add("Start Focus Timer", null, (s, e) => {
-                onOpenRequested?.Invoke();
-                PomodoroTimerService.Instance.StartTimer();
-            });
-            contextMenu.Items.Add("-");
-            contextMenu.Items.Add("Exit FocusFlow", null, (s, e) => onExitRequested?.Invoke());
+                var contextMenu = new ContextMenuStrip();
+                
+                var openItem = new ToolStripMenuItem("Open FocusFlow", null, (s, e) => _onOpenRequested?.Invoke());
+                openItem.Font = new Font(openItem.Font, FontStyle.Bold);
+                contextMenu.Items.Add(openItem);
 
-            _notifyIcon.ContextMenuStrip = contextMenu;
-            _notifyIcon.DoubleClick += (s, e) => onOpenRequested?.Invoke();
+                contextMenu.Items.Add(new ToolStripSeparator());
+
+                contextMenu.Items.Add("Pause / Resume Timer", null, (s, e) =>
+                {
+                    var timer = PomodoroTimerService.Instance;
+                    if (timer.State == TimerState.Running)
+                        timer.Pause();
+                    else
+                        timer.Start();
+                });
+
+                contextMenu.Items.Add("Reset Timer", null, (s, e) =>
+                {
+                    PomodoroTimerService.Instance.Reset();
+                });
+
+                contextMenu.Items.Add(new ToolStripSeparator());
+
+                contextMenu.Items.Add("Exit FocusFlow", null, (s, e) => _onExitRequested?.Invoke());
+
+                _notifyIcon.ContextMenuStrip = contextMenu;
+                _notifyIcon.DoubleClick += (s, e) => _onOpenRequested?.Invoke();
+            }
         }
 
-        public void ShowNotification(string title, string message, ToolTipIcon icon = ToolTipIcon.Info)
-        {
-            var settings = DatabaseService.Instance.GetSettings();
-            if (!settings.NotificationsEnabled) return;
-
-            if (_notifyIcon != null)
-            {
-                _notifyIcon.ShowBalloonTip(3000, title, message, icon);
-            }
-
-            if (settings.SoundEnabled)
-            {
-                System.Media.SystemSounds.Beep.Play();
-            }
-        }
-
-        public void UpdateTrayText(string text)
+        public void ShowNotification(string title, string message)
         {
             if (_notifyIcon != null)
             {
-                // Truncate to maximum 63 characters allowed by NotifyIcon.Text
-                _notifyIcon.Text = text.Length > 63 ? text.Substring(0, 60) + "..." : text;
+                _notifyIcon.ShowBalloonTip(5000, title, message, ToolTipIcon.Info);
             }
         }
 

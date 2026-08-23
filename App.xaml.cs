@@ -1,6 +1,7 @@
 using System;
 using System.Windows;
 using FocusFlow.Services;
+using FocusFlow.Views;
 
 namespace FocusFlow
 {
@@ -27,6 +28,10 @@ namespace FocusFlow
                 {
                     Current.Dispatcher.Invoke(() =>
                     {
+                        if (Current.MainWindow is MainWindow mw)
+                        {
+                            mw.IsExplicitExit = true;
+                        }
                         NotificationService.Instance.Dispose();
                         Current.Shutdown();
                     });
