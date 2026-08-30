@@ -29,7 +29,7 @@ namespace FocusFlow.ViewModels
             set => SetProperty(ref _projects, value);
         }
 
-        public PomodoroViewModel PomodoroViewModel => MainViewModel.Instance.PomodoroViewModel;
+        public PomodoroViewModel? PomodoroViewModel => MainViewModel.Instance?.PomodoroViewModel;
 
         public ICommand CreateTaskCommand { get; }
         public ICommand StartTaskFocusCommand { get; }
@@ -77,13 +77,14 @@ namespace FocusFlow.ViewModels
                 TodayTasks.Add(t);
             }
 
-            // Set default selected task on PomodoroViewModel if none selected
-            if (PomodoroViewModel.SelectedTask == null)
+            // Set default selected task on PomodoroViewModel if available and none selected
+            var pomodoroVm = MainViewModel.Instance?.PomodoroViewModel;
+            if (pomodoroVm != null && pomodoroVm.SelectedTask == null)
             {
                 var activeTodayTask = TodayTasks.FirstOrDefault(t => !t.IsCompleted);
                 if (activeTodayTask != null)
                 {
-                    PomodoroViewModel.SelectedTask = activeTodayTask;
+                    pomodoroVm.SelectedTask = activeTodayTask;
                 }
             }
         }
@@ -114,7 +115,11 @@ namespace FocusFlow.ViewModels
         {
             if (parameter is TaskItem task)
             {
-                PomodoroViewModel.SelectedTask = task;
+                var pomodoroVm = MainViewModel.Instance?.PomodoroViewModel;
+                if (pomodoroVm != null)
+                {
+                    pomodoroVm.SelectedTask = task;
+                }
             }
         }
 

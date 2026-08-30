@@ -11,7 +11,7 @@ namespace FocusFlow.ViewModels
         public static MainViewModel Instance => _instance ??= new MainViewModel();
 
         private ViewModelBase _currentViewModel;
-        private string _activeTabName = "Dashboard";
+        private string _activeTabName = "Today Workspace";
 
         public DashboardViewModel DashboardViewModel { get; }
         public TasksViewModel TasksViewModel { get; }
@@ -51,9 +51,9 @@ namespace FocusFlow.ViewModels
         {
             _instance = this;
 
+            PomodoroViewModel = new PomodoroViewModel();
             DashboardViewModel = new DashboardViewModel();
             TasksViewModel = new TasksViewModel();
-            PomodoroViewModel = new PomodoroViewModel();
             ProjectsViewModel = new ProjectsViewModel();
             CalendarViewModel = new CalendarViewModel();
             ReportsViewModel = new ReportsViewModel();
