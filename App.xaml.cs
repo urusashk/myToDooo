@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using FocusFlow.Services;
 using FocusFlow.Views;
@@ -8,20 +9,29 @@ namespace FocusFlow
 {
     public partial class App : System.Windows.Application
     {
+        private static readonly string CrashLogPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "FocusFlow",
+            "crash.log"
+        );
+
         protected override void OnStartup(StartupEventArgs e)
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(CrashLogPath)!);
+
             AppDomain.CurrentDomain.UnhandledException += (s, ev) =>
             {
-                string log = "UNHANDLED EXCEPTION: " + ev.ExceptionObject.ToString();
-                Console.WriteLine(log);
-                File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash.log"), log);
+                LogException("AppDomain.UnhandledException", ev.ExceptionObject as Exception);
             };
 
             DispatcherUnhandledException += (s, ev) =>
             {
-                string log = "DISPATCHER EXCEPTION: " + ev.Exception.ToString();
-                Console.WriteLine(log);
-                File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash.log"), log);
+                LogException("DispatcherUnhandledException", ev.Exception);
+            };
+
+            TaskScheduler.UnobservedTaskException += (s, ev) =>
+            {
+                LogException("TaskScheduler.UnobservedTaskException", ev.Exception);
             };
 
             base.OnStartup(e);
@@ -55,6 +65,14 @@ namespace FocusFlow
                     });
                 }
             );
+        }
+
+        private static void LogException(string source, Exception? ex)
+        {
+            if (ex == null) return;
+            string content = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{source}]\n{ex}\n\n";
+            File.AppendAllText(CrashLogPath, content);
+            Console.WriteLine(content);
         }
 
         protected override void OnExit(ExitEventArgs e)

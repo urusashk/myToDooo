@@ -8,7 +8,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <!-- Add Project Form Card -->
-            <Border Style="{StaticResource CardBorderStyle}" Padding="20,16" Margin="0,0,0,24">
+            <Border Style="{DynamicResource CardBorderStyle}" Padding="20,16" Margin="0,0,0,24">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
@@ -18,21 +18,21 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Margin="0,0,16,0">
-                        <TextBlock Text="PROJECT NAME *" Style="{StaticResource SubText}" Margin="0,0,0,6"/>
+                        <TextBlock Text="PROJECT NAME *" Style="{DynamicResource SubText}" Margin="0,0,0,6"/>
                         <TextBox Text="{Binding NewProjectName, UpdateSourceTrigger=PropertyChanged}" Height="36"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Margin="0,0,16,0">
-                        <TextBlock Text="DESCRIPTION" Style="{StaticResource SubText}" Margin="0,0,0,6"/>
+                        <TextBlock Text="DESCRIPTION" Style="{DynamicResource SubText}" Margin="0,0,0,6"/>
                         <TextBox Text="{Binding NewProjectDescription, UpdateSourceTrigger=PropertyChanged}" Height="36"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Margin="0,0,16,0">
-                        <TextBlock Text="ACCENT COLOR" Style="{StaticResource SubText}" Margin="0,0,0,6"/>
+                        <TextBlock Text="ACCENT COLOR" Style="{DynamicResource SubText}" Margin="0,0,0,6"/>
                         <TextBox Text="{Binding NewProjectColor, UpdateSourceTrigger=PropertyChanged}" Height="36"/>
                     </StackPanel>
 
-                    <Button Grid.Column="3" Content="+ Add Project" Style="{StaticResource PrimaryButtonStyle}" 
+                    <Button Grid.Column="3" Content="+ Add Project" Style="{DynamicResource PrimaryButtonStyle}" 
                             Command="{Binding CreateProjectCommand}" VerticalAlignment="Bottom" Height="36"/>
                 </Grid>
             </Border>
@@ -46,7 +46,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Style="{StaticResource CardBorderStyle}" Margin="6" Padding="20">
+                        <Border Style="{DynamicResource CardBorderStyle}" Margin="6" Padding="20">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -59,14 +59,14 @@
                                 <DockPanel Grid.Row="0" LastChildFill="False">
                                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
                                         <Border Width="16" Height="16" CornerRadius="8" Background="{Binding ColorHex}" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                        <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                                        <Button Content="✏️" Style="{StaticResource SecondaryButtonStyle}" 
+                                        <Button Content="✏️" Style="{DynamicResource SecondaryButtonStyle}" 
                                                 Command="{Binding DataContext.EditProjectCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}" Padding="6,4" FontSize="12" Margin="0,0,4,0"/>
-                                        <Button Content="🗑️" Style="{StaticResource SecondaryButtonStyle}" 
+                                        <Button Content="🗑️" Style="{DynamicResource SecondaryButtonStyle}" 
                                                 Command="{Binding DataContext.DeleteProjectCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}" Padding="6,4" FontSize="12"/>
                                     </StackPanel>
@@ -74,24 +74,24 @@
 
                                 <!-- Description & Stats -->
                                 <StackPanel Grid.Row="1" Margin="0,12">
-                                    <TextBlock Text="{Binding Description}" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,8"/>
+                                    <TextBlock Text="{Binding Description}" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,8"/>
                                     <DockPanel LastChildFill="False">
                                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                                            <TextBlock Text="Tasks: " FontSize="12" Foreground="{StaticResource TextMutedBrush}"/>
-                                            <TextBlock Text="{Binding CompletedTaskCount}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}"/>
-                                            <TextBlock Text="/" FontSize="12" Foreground="{StaticResource TextMutedBrush}"/>
-                                            <TextBlock Text="{Binding TaskCount}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                            <TextBlock Text="Tasks: " FontSize="12" Foreground="{DynamicResource TextMutedBrush}"/>
+                                            <TextBlock Text="{Binding CompletedTaskCount}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource SuccessBrush}"/>
+                                            <TextBlock Text="/" FontSize="12" Foreground="{DynamicResource TextMutedBrush}"/>
+                                            <TextBlock Text="{Binding TaskCount}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
                                         </StackPanel>
-                                        <TextBlock Text="{Binding CompletionPercentage, StringFormat='{}{0}% Done'}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" DockPanel.Dock="Right"/>
+                                        <TextBlock Text="{Binding CompletionPercentage, StringFormat='{}{0}% Done'}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource PrimaryAccentBrush}" DockPanel.Dock="Right"/>
                                     </DockPanel>
                                 </StackPanel>
 
-                                <!-- Progress Bar -->
-                                <ProgressBar Grid.Row="2" Value="{Binding CompletionPercentage}" Maximum="100" Height="6" 
-                                             Foreground="{StaticResource PrimaryAccentBrush}" Background="#0F172A" Margin="0,0,0,16"/>
+                                <!-- Progress Bar with Mode=OneWay -->
+                                <ProgressBar Grid.Row="2" Value="{Binding CompletionPercentage, Mode=OneWay}" Maximum="100" Height="6" 
+                                             Foreground="{DynamicResource PrimaryAccentBrush}" Background="#0F172A" Margin="0,0,0,16"/>
 
                                 <!-- Action Link -->
-                                <Button Grid.Row="3" Content="View Project Tasks ➔" Style="{StaticResource SecondaryButtonStyle}" 
+                                <Button Grid.Row="3" Content="View Project Tasks ➔" Style="{DynamicResource SecondaryButtonStyle}" 
                                         Command="{Binding DataContext.ViewProjectTasksCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}" HorizontalAlignment="Right" Padding="12,6" FontSize="12"/>
                             </Grid>
