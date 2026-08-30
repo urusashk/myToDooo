@@ -1,68 +1,99 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Input;
 using FocusFlow.Data;
 using FocusFlow.Models;
 
 namespace FocusFlow.ViewModels
 {
-    public class DailyFocusStat
-    {
-        public string DayLabel { get; set; } = string.Empty;
-        public int FocusMinutes { get; set; }
-        public int PomodoroCount { get; set; }
-        public double HeightRatio { get; set; }
-    }
-
-    public class ProjectFocusStat
-    {
-        public string ProjectName { get; set; } = string.Empty;
-        public string ColorHex { get; set; } = "#3B82F6";
-        public int TotalMinutes { get; set; }
-        public int TaskCount { get; set; }
-    }
-
     public class ReportsViewModel : ViewModelBase
     {
-        private int _totalFocusMinutes;
-        private int _totalPomodoros;
-        private int _totalCompletedTasks;
-        private ObservableCollection<DailyFocusStat> _weeklyStats = new();
-        private ObservableCollection<ProjectFocusStat> _projectStats = new();
+        private string _selectedFilterMode = "This Week"; // Today, This Week, This Month, Custom
+        private DateTime _customStartDate = DateTime.Today.AddDays(-7);
+        private DateTime _customEndDate = DateTime.Today;
 
-        public int TotalFocusMinutes
+        private ReportOverview _overview = new();
+        private ObservableCollection<DailyTrendPoint> _dailyTrends = new();
+        private ObservableCollection<ProjectAnalytics> _projectAnalyticsList = new();
+
+        private bool _hasFocusData;
+        private bool _hasProjectData;
+
+        public string SelectedFilterMode
         {
-            get => _totalFocusMinutes;
-            set => SetProperty(ref _totalFocusMinutes, value);
+            get => _selectedFilterMode;
+            set
+            {
+                if (SetProperty(ref _selectedFilterMode, value))
+                {
+                    LoadReports();
+                }
+            }
         }
 
-        public int TotalPomodoros
+        public DateTime CustomStartDate
         {
-            get => _totalPomodoros;
-            set => SetProperty(ref _totalPomodoros, value);
+            get => _customStartDate;
+            set
+            {
+                if (SetProperty(ref _customStartDate, value))
+                {
+                    if (SelectedFilterMode == "Custom") LoadReports();
+                }
+            }
         }
 
-        public int TotalCompletedTasks
+        public DateTime CustomEndDate
         {
-            get => _totalCompletedTasks;
-            set => SetProperty(ref _totalCompletedTasks, value);
+            get => _customEndDate;
+            set
+            {
+                if (SetProperty(ref _customEndDate, value))
+                {
+                    if (SelectedFilterMode == "Custom") LoadReports();
+                }
+            }
         }
 
-        public ObservableCollection<DailyFocusStat> WeeklyStats
+        public ReportOverview Overview
         {
-            get => _weeklyStats;
-            set => SetProperty(ref _weeklyStats, value);
+            get => _overview;
+            set => SetProperty(ref _overview, value);
         }
 
-        public ObservableCollection<ProjectFocusStat> ProjectStats
+        public ObservableCollection<DailyTrendPoint> DailyTrends
         {
-            get => _projectStats;
-            set => SetProperty(ref _projectStats, value);
+            get => _dailyTrends;
+            set => SetProperty(ref _dailyTrends, value);
         }
+
+        public ObservableCollection<ProjectAnalytics> ProjectAnalyticsList
+        {
+            get => _projectAnalyticsList;
+            set => SetProperty(ref _projectAnalyticsList, value);
+        }
+
+        public bool HasFocusData
+        {
+            get => _hasFocusData;
+            set => SetProperty(ref _hasFocusData, value);
+        }
+
+        public bool HasProjectData
+        {
+            get => _hasProjectData;
+            set => SetProperty(ref _hasProjectData, value);
+        }
+
+        public ICommand SelectFilterModeCommand { get; }
+        public ICommand RefreshReportCommand { get; }
 
         public ReportsViewModel()
         {
+            SelectFilterModeCommand = new RelayCommand(SelectFilterMode);
+            RefreshReportCommand = new RelayCommand(LoadReports);
+
             LoadReports();
         }
 
@@ -71,61 +102,66 @@ namespace FocusFlow.ViewModels
             LoadReports();
         }
 
+        private void SelectFilterMode(object? parameter)
+        {
+            if (parameter is string mode)
+            {
+                SelectedFilterMode = mode;
+            }
+        }
+
         public void LoadReports()
         {
-            var (_, _, totalCount, totalMinutes) = DatabaseService.Instance.GetFocusStats();
-            TotalPomodoros = totalCount;
-            TotalFocusMinutes = totalMinutes;
+            var db = DatabaseService.Instance;
+            DateTime startDate;
+            DateTime endDate;
 
-            var tasks = DatabaseService.Instance.GetTasks();
-            TotalCompletedTasks = tasks.Count(t => t.IsCompleted);
+            var today = DateTime.Today;
 
-            // Calculate past 7 days breakdown
-            WeeklyStats.Clear();
-            var sessions = DatabaseService.Instance.GetRecentSessions(200);
-
-            int maxMinutes = 1;
-            var dailyList = new List<DailyFocusStat>();
-
-            for (int i = 6; i >= 0; i--)
+            switch (SelectedFilterMode)
             {
-                DateTime day = DateTime.Today.AddDays(-i);
-                int minutes = sessions.Where(s => s.StartedAt.Date == day.Date && s.Type == SessionType.Focus).Sum(s => s.DurationMinutes);
-                int count = sessions.Count(s => s.StartedAt.Date == day.Date && s.Type == SessionType.Focus);
-                
-                if (minutes > maxMinutes) maxMinutes = minutes;
-
-                dailyList.Add(new DailyFocusStat
-                {
-                    DayLabel = day.ToString("ddd"),
-                    FocusMinutes = minutes,
-                    PomodoroCount = count
-                });
+                case "Today":
+                    startDate = today;
+                    endDate = today;
+                    break;
+                case "This Month":
+                    startDate = new DateTime(today.Year, today.Month, 1);
+                    endDate = today;
+                    break;
+                case "Custom":
+                    startDate = CustomStartDate;
+                    endDate = CustomEndDate;
+                    break;
+                case "This Week":
+                default:
+                    int dayOfWeek = (int)today.DayOfWeek;
+                    startDate = today.AddDays(-dayOfWeek); // Start of week (Sunday)
+                    endDate = today;
+                    break;
             }
 
-            foreach (var item in dailyList)
+            // 1. Fetch Overview Stats
+            Overview = db.GetReportOverview(startDate, endDate);
+
+            // 2. Fetch Daily Trends for Bar Charts
+            var trends = db.GetDailyTrends(startDate, endDate);
+            DailyTrends.Clear();
+            foreach (var point in trends)
             {
-                item.HeightRatio = (double)item.FocusMinutes / maxMinutes;
-                WeeklyStats.Add(item);
+                DailyTrends.Add(point);
             }
 
-            // Calculate Project stats
-            ProjectStats.Clear();
-            var projects = DatabaseService.Instance.GetProjects();
-            foreach (var p in projects)
+            // 3. Fetch Project Analytics
+            var projList = db.GetProjectAnalytics(startDate, endDate);
+            ProjectAnalyticsList.Clear();
+            foreach (var proj in projList)
             {
-                var pTasks = tasks.Where(t => t.ProjectId == p.Id).ToList();
-                int pTaskIds = pTasks.Select(t => t.Id).Distinct().Count();
-                int minutes = sessions.Where(s => s.TaskId.HasValue && pTasks.Any(t => t.Id == s.TaskId.Value)).Sum(s => s.DurationMinutes);
-
-                ProjectStats.Add(new ProjectFocusStat
-                {
-                    ProjectName = p.Name,
-                    ColorHex = p.ColorHex,
-                    TotalMinutes = minutes,
-                    TaskCount = pTaskIds
-                });
+                ProjectAnalyticsList.Add(proj);
             }
+
+            // 4. Update Empty State Flags
+            HasFocusData = Overview.TotalFocusMinutes > 0 || DailyTrends.Any(t => t.FocusMinutes > 0);
+            HasProjectData = ProjectAnalyticsList.Any(p => p.TotalTasks > 0 || p.TotalFocusMinutes > 0);
         }
     }
 }

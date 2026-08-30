@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Data.Sqlite;
 using FocusFlow.Models;
 
@@ -613,6 +614,194 @@ namespace FocusFlow.Data
                 return (todayCount, todayMinutes, totalCount, totalMinutes);
             }
             return (0, 0, 0, 0);
+        }
+        #endregion
+
+        #region Advanced Analytics
+        public ReportOverview GetReportOverview(DateTime? startDate = null, DateTime? endDate = null)
+        {
+            var overview = new ReportOverview();
+            using var conn = GetConnection();
+
+            // 1. Focus Minutes & Pomodoros in Date Range
+            using (var cmd = conn.CreateCommand())
+            {
+                string sql = @"
+                    SELECT 
+                        COALESCE(SUM(CASE WHEN Type = 0 THEN DurationMinutes ELSE 0 END), 0) AS RangeFocusMinutes,
+                        COALESCE(SUM(CASE WHEN Type = 0 THEN 1 ELSE 0 END), 0) AS RangePomodoros,
+                        COALESCE(SUM(CASE WHEN Type = 0 AND date(StartedAt) = date('now') THEN DurationMinutes ELSE 0 END), 0) AS TodayFocusMinutes,
+                        COALESCE(SUM(CASE WHEN Type = 0 AND date(StartedAt) >= date('now', '-7 days') THEN DurationMinutes ELSE 0 END), 0) AS WeeklyFocusMinutes
+                    FROM PomodoroSessions
+                    WHERE 1=1
+                ";
+
+                if (startDate.HasValue)
+                {
+                    sql += " AND date(StartedAt) >= date(@StartDate)";
+                    cmd.Parameters.AddWithValue("@StartDate", startDate.Value.ToString("yyyy-MM-dd"));
+                }
+                if (endDate.HasValue)
+                {
+                    sql += " AND date(StartedAt) <= date(@EndDate)";
+                    cmd.Parameters.AddWithValue("@EndDate", endDate.Value.ToString("yyyy-MM-dd"));
+                }
+
+                cmd.CommandText = sql;
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    overview.TotalFocusMinutes = reader.GetInt32(0);
+                    overview.TotalPomodoros = reader.GetInt32(1);
+                    overview.TodayFocusMinutes = reader.GetInt32(2);
+                    overview.WeeklyFocusMinutes = reader.GetInt32(3);
+                }
+            }
+
+            // 2. Task Completion Stats in Date Range
+            using (var cmd = conn.CreateCommand())
+            {
+                string sql = @"
+                    SELECT 
+                        COALESCE(SUM(CASE WHEN IsCompleted = 1 THEN 1 ELSE 0 END), 0) AS CompletedCount,
+                        COALESCE(SUM(CASE WHEN IsCompleted = 0 THEN 1 ELSE 0 END), 0) AS PendingCount,
+                        COALESCE(SUM(CASE WHEN IsCompleted = 0 AND DueDate IS NOT NULL AND date(DueDate) < date('now') THEN 1 ELSE 0 END), 0) AS OverdueCount
+                    FROM Tasks
+                    WHERE 1=1
+                ";
+
+                if (startDate.HasValue)
+                {
+                    sql += " AND (date(CreatedAt) >= date(@StartDate) OR (CompletedAt IS NOT NULL AND date(CompletedAt) >= date(@StartDate)))";
+                    cmd.Parameters.AddWithValue("@StartDate", startDate.Value.ToString("yyyy-MM-dd"));
+                }
+                if (endDate.HasValue)
+                {
+                    sql += " AND (date(CreatedAt) <= date(@EndDate) OR (CompletedAt IS NOT NULL AND date(CompletedAt) <= date(@EndDate)))";
+                    cmd.Parameters.AddWithValue("@EndDate", endDate.Value.ToString("yyyy-MM-dd"));
+                }
+
+                cmd.CommandText = sql;
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    overview.CompletedTasks = reader.GetInt32(0);
+                    overview.PendingTasks = reader.GetInt32(1);
+                    overview.OverdueTasks = reader.GetInt32(2);
+                }
+            }
+
+            return overview;
+        }
+
+        public List<DailyTrendPoint> GetDailyTrends(DateTime startDate, DateTime endDate)
+        {
+            var list = new List<DailyTrendPoint>();
+            using var conn = GetConnection();
+
+            for (var d = startDate.Date; d <= endDate.Date; d = d.AddDays(1))
+            {
+                string dayStr = d.ToString("yyyy-MM-dd");
+                var point = new DailyTrendPoint
+                {
+                    Date = d,
+                    DayLabel = d.ToString("ddd dd")
+                };
+
+                // Focus Mins & Pomodoros for this day
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT 
+                            COALESCE(SUM(CASE WHEN Type = 0 THEN DurationMinutes ELSE 0 END), 0),
+                            COALESCE(SUM(CASE WHEN Type = 0 THEN 1 ELSE 0 END), 0)
+                        FROM PomodoroSessions
+                        WHERE date(StartedAt) = date(@Day);
+                    ";
+                    cmd.Parameters.AddWithValue("@Day", dayStr);
+                    using var reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        point.FocusMinutes = reader.GetInt32(0);
+                        point.PomodorosCompleted = reader.GetInt32(1);
+                    }
+                }
+
+                // Tasks completed for this day
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT COUNT(*) FROM Tasks
+                        WHERE IsCompleted = 1 AND date(CompletedAt) = date(@Day);
+                    ";
+                    cmd.Parameters.AddWithValue("@Day", dayStr);
+                    point.TasksCompleted = Convert.ToInt32(cmd.ExecuteScalar() ?? 0);
+                }
+
+                list.Add(point);
+            }
+
+            // Calculate height ratios for bar rendering (max scaling)
+            int maxFocus = list.Max(p => p.FocusMinutes);
+            int maxPomo = list.Max(p => p.PomodorosCompleted);
+            int maxTasks = list.Max(p => p.TasksCompleted);
+
+            foreach (var p in list)
+            {
+                p.FocusHeightRatio = maxFocus > 0 ? (double)p.FocusMinutes / maxFocus : 0.0;
+                p.PomodoroHeightRatio = maxPomo > 0 ? (double)p.PomodorosCompleted / maxPomo : 0.0;
+                p.TasksHeightRatio = maxTasks > 0 ? (double)p.TasksCompleted / maxTasks : 0.0;
+            }
+
+            return list;
+        }
+
+        public List<ProjectAnalytics> GetProjectAnalytics(DateTime? startDate = null, DateTime? endDate = null)
+        {
+            var list = new List<ProjectAnalytics>();
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+
+            string sql = @"
+                SELECT 
+                    p.Id, p.Name, p.ColorHex,
+                    COUNT(t.Id) AS TotalTasks,
+                    SUM(CASE WHEN t.IsCompleted = 1 THEN 1 ELSE 0 END) AS CompletedTasks,
+                    COALESCE((
+                        SELECT SUM(ps.DurationMinutes)
+                        FROM PomodoroSessions ps
+                        INNER JOIN Tasks t2 ON ps.TaskId = t2.Id
+                        WHERE t2.ProjectId = p.Id AND ps.Type = 0
+                    ), 0) AS TotalFocusMinutes,
+                    COALESCE((
+                        SELECT SUM(ps.IsSuccessful)
+                        FROM PomodoroSessions ps
+                        INNER JOIN Tasks t2 ON ps.TaskId = t2.Id
+                        WHERE t2.ProjectId = p.Id AND ps.Type = 0
+                    ), 0) AS PomodorosCompleted
+                FROM Projects p
+                LEFT JOIN Tasks t ON p.Id = t.ProjectId
+                GROUP BY p.Id, p.Name, p.ColorHex
+                ORDER BY p.Name;
+            ";
+            cmd.CommandText = sql;
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new ProjectAnalytics
+                {
+                    ProjectId = reader.GetInt32(0),
+                    ProjectName = reader.GetString(1),
+                    ColorHex = reader.GetString(2),
+                    TotalTasks = reader.GetInt32(3),
+                    CompletedTasks = reader.IsDBNull(4) ? 0 : reader.GetInt32(4),
+                    TotalFocusMinutes = reader.GetInt32(5),
+                    PomodorosCompleted = reader.GetInt32(6)
+                });
+            }
+
+            return list;
         }
         #endregion
 

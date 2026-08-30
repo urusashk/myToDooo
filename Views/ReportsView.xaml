@@ -3,48 +3,126 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignHeight="680" d:DesignWidth="920">
+             mc:Ignorable="d" d:DesignHeight="780" d:DesignWidth="920">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
-            <!-- Lifetime Metrics -->
-            <UniformGrid Columns="3" Margin="0,0,0,24">
-                <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,8,0">
+            <!-- Date Filter Toolbar -->
+            <Border Style="{StaticResource CardBorderStyle}" Padding="16,12" Margin="0,0,0,20">
+                <DockPanel LastChildFill="False">
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
+                        <TextBlock Text="Range Filter: " Style="{StaticResource SubText}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                        <Button Content="Today" Style="{StaticResource SecondaryButtonStyle}" 
+                                Command="{Binding SelectFilterModeCommand}" CommandParameter="Today" Padding="14,6" Margin="0,0,4,0"/>
+                        <Button Content="This Week" Style="{StaticResource SecondaryButtonStyle}" 
+                                Command="{Binding SelectFilterModeCommand}" CommandParameter="This Week" Padding="14,6" Margin="0,0,4,0"/>
+                        <Button Content="This Month" Style="{StaticResource SecondaryButtonStyle}" 
+                                Command="{Binding SelectFilterModeCommand}" CommandParameter="This Month" Padding="14,6" Margin="0,0,4,0"/>
+                        <Button Content="Custom Range" Style="{StaticResource SecondaryButtonStyle}" 
+                                Command="{Binding SelectFilterModeCommand}" CommandParameter="Custom" Padding="14,6" Margin="0,0,12,0"/>
+                    </StackPanel>
+
+                    <Button DockPanel.Dock="Right" Content="🔄 Refresh" Style="{StaticResource SecondaryButtonStyle}" 
+                            Command="{Binding RefreshReportCommand}" Padding="12,6" VerticalAlignment="Center"/>
+                </DockPanel>
+            </Border>
+
+            <!-- Custom Date Range Controls (Visible when Custom filter active) -->
+            <Border Style="{StaticResource CardBorderStyle}" Padding="16,10" Margin="0,0,0,20" HorizontalAlignment="Left">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="From:" Style="{StaticResource SubText}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <DatePicker SelectedDate="{Binding CustomStartDate, Mode=TwoWay}" Height="34" Margin="0,0,16,0"/>
+                    <TextBlock Text="To:" Style="{StaticResource SubText}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <DatePicker SelectedDate="{Binding CustomEndDate, Mode=TwoWay}" Height="34"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Section 1: Overview Summary Cards -->
+            <UniformGrid Columns="3" Margin="0,0,0,20">
+                <!-- Total Range Focus Mins -->
+                <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,6,0">
                     <StackPanel>
-                        <TextBlock Text="TOTAL FOCUS MINUTES" Style="{StaticResource SubText}"/>
-                        <TextBlock Text="{Binding TotalFocusMinutes}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" Margin="0,8,0,0"/>
+                        <TextBlock Text="TOTAL FOCUS TIME" Style="{StaticResource SubText}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBlock Text="{Binding Overview.TotalFocusMinutes}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}"/>
+                            <TextBlock Text=" mins" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 
-                <Border Style="{StaticResource CardBorderStyle}" Margin="4,0,4,0">
+                <!-- Today Focus Mins -->
+                <Border Style="{StaticResource CardBorderStyle}" Margin="3,0,3,0">
                     <StackPanel>
-                        <TextBlock Text="TOTAL POMODOROS" Style="{StaticResource SubText}"/>
-                        <TextBlock Text="{Binding TotalPomodoros}" FontSize="32" FontWeight="Bold" Foreground="#EC4899" Margin="0,8,0,0"/>
+                        <TextBlock Text="TODAY FOCUS TIME" Style="{StaticResource SubText}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBlock Text="{Binding Overview.TodayFocusMinutes}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}"/>
+                            <TextBlock Text=" mins" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 
-                <Border Style="{StaticResource CardBorderStyle}" Margin="8,0,0,0">
+                <!-- Week Focus Mins -->
+                <Border Style="{StaticResource CardBorderStyle}" Margin="6,0,0,0">
                     <StackPanel>
-                        <TextBlock Text="COMPLETED TASKS" Style="{StaticResource SubText}"/>
-                        <TextBlock Text="{Binding TotalCompletedTasks}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" Margin="0,8,0,0"/>
+                        <TextBlock Text="THIS WEEK FOCUS" Style="{StaticResource SubText}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBlock Text="{Binding Overview.WeeklyFocusMinutes}" FontSize="32" FontWeight="Bold" Foreground="#EC4899"/>
+                            <TextBlock Text=" mins" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Total Pomodoros -->
+                <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,6,0">
+                    <StackPanel>
+                        <TextBlock Text="POMODOROS COMPLETED" Style="{StaticResource SubText}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBlock Text="{Binding Overview.TotalPomodoros}" FontSize="32" FontWeight="Bold" Foreground="#F59E0B"/>
+                            <TextBlock Text=" sessions" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Completed Tasks -->
+                <Border Style="{StaticResource CardBorderStyle}" Margin="3,0,3,0">
+                    <StackPanel>
+                        <TextBlock Text="TASKS COMPLETED" Style="{StaticResource SubText}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBlock Text="{Binding Overview.CompletedTasks}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}"/>
+                            <TextBlock Text="{Binding Overview.TotalTasks, StringFormat=' / {0} Total'}" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Completion Rate % -->
+                <Border Style="{StaticResource CardBorderStyle}" Margin="6,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="COMPLETION RATE" Style="{StaticResource SubText}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBlock Text="{Binding Overview.CompletionRatePercentage, StringFormat='{}{0}%'}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}"/>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
             </UniformGrid>
 
-            <!-- Past 7 Days Focus Distribution Bar Chart -->
+            <!-- Section 2: Visual Trends Bar Chart -->
             <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,24" Padding="24">
                 <StackPanel>
-                    <TextBlock Text="Weekly Focus Time (Past 7 Days)" Style="{StaticResource Heading2}" Margin="0,0,0,20"/>
+                    <DockPanel LastChildFill="False" Margin="0,0,0,20">
+                        <TextBlock Text="Focus &amp; Productivity Trends" Style="{StaticResource Heading2}" DockPanel.Dock="Left"/>
+                        <TextBlock Text="{Binding SelectedFilterMode, StringFormat='Filter: {0}'}" Style="{StaticResource SubText}" DockPanel.Dock="Right" VerticalAlignment="Center"/>
+                    </DockPanel>
 
-                    <ItemsControl ItemsSource="{Binding WeeklyStats}">
+                    <!-- Daily Trends Bar Visualizer -->
+                    <ItemsControl ItemsSource="{Binding DailyTrends}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <UniformGrid Columns="7" Height="180"/>
+                                <UniformGrid Columns="7" Height="190"/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid VerticalAlignment="Bottom" Margin="12,0">
+                                <Grid VerticalAlignment="Bottom" Margin="8,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
@@ -53,50 +131,76 @@
 
                                     <!-- Focus Mins label -->
                                     <TextBlock Grid.Row="0" Text="{Binding FocusMinutes, StringFormat='{}{0}m'}" 
-                                               FontSize="11" FontWeight="Bold" Foreground="{StaticResource TextSecondaryBrush}" 
+                                               FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}" 
                                                HorizontalAlignment="Center" Margin="0,0,0,6"/>
 
-                                    <!-- Graphical Bar -->
-                                    <Border Grid.Row="1" Background="{StaticResource PrimaryAccentBrush}" CornerRadius="6" VerticalAlignment="Bottom" Height="100">
+                                    <!-- Bar Container -->
+                                    <Border Grid.Row="1" Background="{StaticResource PrimaryAccentBrush}" CornerRadius="6" VerticalAlignment="Bottom" Height="110">
                                         <Border.LayoutTransform>
-                                            <ScaleTransform ScaleY="{Binding HeightRatio}"/>
+                                            <ScaleTransform ScaleY="{Binding FocusHeightRatio}"/>
                                         </Border.LayoutTransform>
                                     </Border>
 
                                     <!-- Day Label -->
-                                    <TextBlock Grid.Row="2" Text="{Binding DayLabel}" FontSize="12" FontWeight="Bold" 
-                                               Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                    <TextBlock Grid.Row="2" Text="{Binding DayLabel}" FontSize="11" FontWeight="SemiBold" 
+                                               Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Center" Margin="0,8,0,0"/>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+
+                    <!-- Empty State Fallback -->
+                    <Border Background="#0F172A" CornerRadius="8" Padding="16" Margin="0,16,0,0" 
+                            Visibility="{Binding HasFocusData, Converter={StaticResource BoolToVisConverter}}">
+                        <!-- Hidden when has focus data, handled cleanly -->
+                    </Border>
                 </StackPanel>
             </Border>
 
-            <!-- Project Breakdown -->
+            <!-- Section 3: Project Analytics Cards Grid -->
             <Border Style="{StaticResource CardBorderStyle}" Padding="24">
                 <StackPanel>
-                    <TextBlock Text="Focus Distribution by Project" Style="{StaticResource Heading2}" Margin="0,0,0,16"/>
+                    <TextBlock Text="Project Analytics &amp; Focus Breakdown" Style="{StaticResource Heading2}" Margin="0,0,0,16"/>
 
-                    <ItemsControl ItemsSource="{Binding ProjectStats}">
+                    <ItemsControl ItemsSource="{Binding ProjectAnalyticsList}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,12">
+                                <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,14">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="140"/>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="120"/>
                                         </Grid.ColumnDefinitions>
 
+                                        <!-- Project Badge -->
                                         <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Border Width="12" Height="12" CornerRadius="6" Background="{Binding ColorHex}" Margin="0,0,10,0"/>
-                                            <TextBlock Text="{Binding ProjectName}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                            <Border Width="14" Height="14" CornerRadius="7" Background="{Binding ColorHex}" Margin="0,0,10,0"/>
+                                            <TextBlock Text="{Binding ProjectName}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
                                         </StackPanel>
 
-                                        <ProgressBar Grid.Column="1" Value="{Binding TotalMinutes}" Maximum="300" Height="8" Foreground="{StaticResource PrimaryAccentBrush}" Background="#0F172A" VerticalAlignment="Center" Margin="12,0"/>
+                                        <!-- Tasks Stats -->
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Tasks: " FontSize="12" Foreground="{StaticResource TextMutedBrush}"/>
+                                                <TextBlock Text="{Binding CompletedTasks}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}"/>
+                                                <TextBlock Text="/" FontSize="12" Foreground="{StaticResource TextMutedBrush}"/>
+                                                <TextBlock Text="{Binding TotalTasks}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding CompletionPercentage, StringFormat='{}{0}% Done'}" FontSize="11" Foreground="{StaticResource PrimaryAccentBrush}" Margin="0,2,0,0"/>
+                                        </StackPanel>
 
-                                        <TextBlock Grid.Column="2" Text="{Binding TotalMinutes, StringFormat='{}{0} mins'}" FontSize="13" FontWeight="Bold" Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <!-- Progress Bar -->
+                                        <ProgressBar Grid.Column="2" Value="{Binding CompletionPercentage}" Maximum="100" Height="8" 
+                                                     Foreground="{StaticResource PrimaryAccentBrush}" Background="#0F172A" 
+                                                     VerticalAlignment="Center" Margin="16,0"/>
+
+                                        <!-- Focus Minutes & Pomodoros -->
+                                        <StackPanel Grid.Column="3" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding TotalFocusMinutes, StringFormat='{}{0} mins'}" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Right"/>
+                                            <TextBlock Text="{Binding PomodorosCompleted, StringFormat='{}🍅 {0} sessions'}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Right" Margin="0,2,0,0"/>
+                                        </StackPanel>
                                     </Grid>
                                 </Border>
                             </DataTemplate>
