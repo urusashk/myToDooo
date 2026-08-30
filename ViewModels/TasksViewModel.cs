@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -20,7 +21,7 @@ namespace FocusFlow.ViewModels
         private Project? _selectedProjectFilter;
         private string _selectedViewTab = "All"; // All, Today, Upcoming, Completed
         private string _selectedSortOption = "Due Date"; // Due Date, Priority, Title, Created Date
-        private TaskPriority? _selectedPriorityFilter = null;
+        private string _selectedPriorityFilterString = "All Priorities";
 
         public ObservableCollection<TaskItem> Tasks
         {
@@ -33,6 +34,24 @@ namespace FocusFlow.ViewModels
             get => _projects;
             set => SetProperty(ref _projects, value);
         }
+
+        public ObservableCollection<Project> ProjectsFilterList => Projects;
+
+        public List<string> PrioritiesFilterList { get; } = new()
+        {
+            "All Priorities",
+            "High",
+            "Medium",
+            "Low"
+        };
+
+        public List<string> SortOptionsList { get; } = new()
+        {
+            "Due Date",
+            "Priority",
+            "Title",
+            "Created Date"
+        };
 
         public string SearchQuery
         {
@@ -82,12 +101,12 @@ namespace FocusFlow.ViewModels
             }
         }
 
-        public TaskPriority? SelectedPriorityFilter
+        public string SelectedPriorityFilter
         {
-            get => _selectedPriorityFilter;
+            get => _selectedPriorityFilterString;
             set
             {
-                if (SetProperty(ref _selectedPriorityFilter, value))
+                if (SetProperty(ref _selectedPriorityFilterString, value))
                 {
                     ApplyFilters();
                 }
@@ -183,18 +202,27 @@ namespace FocusFlow.ViewModels
             }
 
             // Priority Filter
-            if (SelectedPriorityFilter.HasValue)
+            if (SelectedPriorityFilter == "High")
             {
-                query = query.Where(t => t.Priority == SelectedPriorityFilter.Value);
+                query = query.Where(t => t.Priority == TaskPriority.High);
+            }
+            else if (SelectedPriorityFilter == "Medium")
+            {
+                query = query.Where(t => t.Priority == TaskPriority.Medium);
+            }
+            else if (SelectedPriorityFilter == "Low")
+            {
+                query = query.Where(t => t.Priority == TaskPriority.Low);
             }
 
-            // Sorting
+            // MANDATORY ORDERING RULE:
+            // COMPLETED TASKS MUST ALWAYS APPEAR AFTER ACTIVE TASKS (IsCompleted = false BEFORE IsCompleted = true)
             query = SelectedSortOption switch
             {
-                "Priority" => query.OrderByDescending(t => t.Priority).ThenBy(t => t.DueDate),
-                "Title" => query.OrderBy(t => t.Title),
-                "Created Date" => query.OrderByDescending(t => t.CreatedAt),
-                _ => query.OrderBy(t => t.DueDate.HasValue ? 0 : 1).ThenBy(t => t.DueDate).ThenByDescending(t => t.Priority)
+                "Priority" => query.OrderBy(t => t.IsCompleted).ThenByDescending(t => t.Priority).ThenBy(t => t.DueDate),
+                "Title" => query.OrderBy(t => t.IsCompleted).ThenBy(t => t.Title),
+                "Created Date" => query.OrderBy(t => t.IsCompleted).ThenByDescending(t => t.CreatedAt),
+                _ => query.OrderBy(t => t.IsCompleted).ThenBy(t => t.DueDate.HasValue ? 0 : 1).ThenBy(t => t.DueDate).ThenByDescending(t => t.Priority)
             };
 
             Tasks.Clear();
@@ -230,6 +258,7 @@ namespace FocusFlow.ViewModels
                 DatabaseService.Instance.SaveTask(window.TaskItem);
                 LoadTasks();
                 MainViewModel.Instance.DashboardViewModel.LoadDashboardData();
+                MainViewModel.Instance.CalendarViewModel.BuildCalendar();
             }
         }
 
@@ -247,6 +276,7 @@ namespace FocusFlow.ViewModels
                     DatabaseService.Instance.SaveTask(window.TaskItem);
                     LoadTasks();
                     MainViewModel.Instance.DashboardViewModel.LoadDashboardData();
+                    MainViewModel.Instance.CalendarViewModel.BuildCalendar();
                 }
             }
         }
@@ -260,6 +290,7 @@ namespace FocusFlow.ViewModels
                     DatabaseService.Instance.DeleteTask(task.Id);
                     LoadTasks();
                     MainViewModel.Instance.DashboardViewModel.LoadDashboardData();
+                    MainViewModel.Instance.CalendarViewModel.BuildCalendar();
                 }
             }
         }
@@ -272,6 +303,7 @@ namespace FocusFlow.ViewModels
                 DatabaseService.Instance.ToggleTaskCompletion(task.Id, task.IsCompleted);
                 ApplyFilters();
                 MainViewModel.Instance.DashboardViewModel.LoadDashboardData();
+                MainViewModel.Instance.CalendarViewModel.BuildCalendar();
             }
         }
 

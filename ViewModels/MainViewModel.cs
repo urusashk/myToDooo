@@ -78,7 +78,7 @@ namespace FocusFlow.ViewModels
 
         private void UpdateActiveTabName(ViewModelBase vm)
         {
-            if (vm is DashboardViewModel) ActiveTabName = "Dashboard";
+            if (vm is DashboardViewModel) ActiveTabName = "Today Workspace";
             else if (vm is TasksViewModel) ActiveTabName = "Tasks";
             else if (vm is PomodoroViewModel) ActiveTabName = "Focus Timer";
             else if (vm is ProjectsViewModel) ActiveTabName = "Projects";
