@@ -17,6 +17,9 @@ namespace FocusFlow
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            // CRITICAL FIX: Prevent WPF from shutting down when MainWindow is hidden or minimized
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
             Directory.CreateDirectory(Path.GetDirectoryName(CrashLogPath)!);
 
             AppDomain.CurrentDomain.UnhandledException += (s, ev) =>

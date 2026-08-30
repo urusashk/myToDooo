@@ -23,7 +23,7 @@ namespace FocusFlow.Views
                 Hide();
                 NotificationService.Instance.ShowNotification(
                     "FocusFlow Running in Tray",
-                    "Your Pomodoro timer is continuing to count accurately in the background."
+                    "Your Pomodoro timer and reminders are continuing in the background."
                 );
             }
         }
@@ -32,12 +32,12 @@ namespace FocusFlow.Views
         {
             if (!IsExplicitExit)
             {
-                // Minimize to tray instead of quitting
+                // Minimize to tray instead of quitting process
                 e.Cancel = true;
                 Hide();
                 NotificationService.Instance.ShowNotification(
                     "FocusFlow Running in Background",
-                    "Double click tray icon to reopen."
+                    "Double click tray icon or select Open to restore window."
                 );
             }
             else
