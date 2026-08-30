@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Windows;
 using FocusFlow.Services;
 using FocusFlow.Views;
@@ -9,6 +10,20 @@ namespace FocusFlow
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            AppDomain.CurrentDomain.UnhandledException += (s, ev) =>
+            {
+                string log = "UNHANDLED EXCEPTION: " + ev.ExceptionObject.ToString();
+                Console.WriteLine(log);
+                File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash.log"), log);
+            };
+
+            DispatcherUnhandledException += (s, ev) =>
+            {
+                string log = "DISPATCHER EXCEPTION: " + ev.Exception.ToString();
+                Console.WriteLine(log);
+                File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash.log"), log);
+            };
+
             base.OnStartup(e);
 
             // Start Background Reminder Engine
