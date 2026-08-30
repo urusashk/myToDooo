@@ -51,7 +51,7 @@ namespace FocusFlow.Views
                 Hide();
                 LogLifecycle("OnClosing: Window hidden to System Tray. Process remaining active.");
                 NotificationService.Instance.ShowNotification(
-                    "FocusFlow Running in Tray",
+                    "My Tasks Running in Tray",
                     "Your Pomodoro timer and reminders are continuing in the background."
                 );
             }

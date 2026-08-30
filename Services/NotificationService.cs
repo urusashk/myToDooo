@@ -23,13 +23,13 @@ namespace FocusFlow.Services
                 _notifyIcon = new NotifyIcon
                 {
                     Icon = SystemIcons.Application,
-                    Text = "FocusFlow - Pomodoro & Tasks",
+                    Text = "My Tasks - Pomodoro & Tasks",
                     Visible = true
                 };
 
                 var contextMenu = new ContextMenuStrip();
                 
-                var openItem = new ToolStripMenuItem("Open FocusFlow", null, (s, e) => _onOpenRequested?.Invoke());
+                var openItem = new ToolStripMenuItem("Open My Tasks", null, (s, e) => _onOpenRequested?.Invoke());
                 openItem.Font = new Font(openItem.Font, FontStyle.Bold);
                 contextMenu.Items.Add(openItem);
 
@@ -51,7 +51,7 @@ namespace FocusFlow.Services
 
                 contextMenu.Items.Add(new ToolStripSeparator());
 
-                contextMenu.Items.Add("Exit FocusFlow", null, (s, e) => _onExitRequested?.Invoke());
+                contextMenu.Items.Add("Exit My Tasks", null, (s, e) => _onExitRequested?.Invoke());
 
                 _notifyIcon.ContextMenuStrip = contextMenu;
                 _notifyIcon.DoubleClick += (s, e) => _onOpenRequested?.Invoke();
