@@ -9,32 +9,30 @@ namespace FocusFlow
 {
     public partial class App : System.Windows.Application
     {
-        private static readonly string CrashLogPath = Path.Combine(
+        private static readonly string LifecycleLogPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "FocusFlow",
-            "crash.log"
+            "lifecycle.log"
         );
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            // CRITICAL FIX: Prevent WPF from shutting down when MainWindow is hidden or minimized
+            LogLifecycle("App.OnStartup BEGIN");
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
-
-            Directory.CreateDirectory(Path.GetDirectoryName(CrashLogPath)!);
 
             AppDomain.CurrentDomain.UnhandledException += (s, ev) =>
             {
-                LogException("AppDomain.UnhandledException", ev.ExceptionObject as Exception);
+                LogLifecycle("AppDomain.UnhandledException: " + ev.ExceptionObject);
             };
 
             DispatcherUnhandledException += (s, ev) =>
             {
-                LogException("DispatcherUnhandledException", ev.Exception);
+                LogLifecycle("DispatcherUnhandledException: " + ev.Exception);
             };
 
             TaskScheduler.UnobservedTaskException += (s, ev) =>
             {
-                LogException("TaskScheduler.UnobservedTaskException", ev.Exception);
+                LogLifecycle("TaskScheduler.UnobservedTaskException: " + ev.Exception);
             };
 
             base.OnStartup(e);
@@ -59,6 +57,7 @@ namespace FocusFlow
                 {
                     Current.Dispatcher.Invoke(() =>
                     {
+                        LogLifecycle("Tray Exit Requested");
                         if (Current.MainWindow is MainWindow mw)
                         {
                             mw.IsExplicitExit = true;
@@ -68,18 +67,24 @@ namespace FocusFlow
                     });
                 }
             );
+
+            LogLifecycle("App.OnStartup END");
         }
 
-        private static void LogException(string source, Exception? ex)
+        public static void LogLifecycle(string msg)
         {
-            if (ex == null) return;
-            string content = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{source}]\n{ex}\n\n";
-            File.AppendAllText(CrashLogPath, content);
-            Console.WriteLine(content);
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(LifecycleLogPath)!);
+                string line = $"[{DateTime.Now:HH:mm:ss.fff}] [App] {msg}\n";
+                File.AppendAllText(LifecycleLogPath, line);
+            }
+            catch { }
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
+            LogLifecycle($"App.OnExit: Application terminating with exit code {e.ApplicationExitCode}");
             ReminderService.Instance.Stop();
             NotificationService.Instance.Dispose();
             base.OnExit(e);
