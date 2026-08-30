@@ -8,7 +8,7 @@
         <ResourceDictionary>
             <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
 
-            <!-- Color System -->
+            <!-- Color System Brushes -->
             <SolidColorBrush x:Key="BgDarkBrush" Color="#0F172A" />
             <SolidColorBrush x:Key="BgCardBrush" Color="#1E293B" />
             <SolidColorBrush x:Key="BgHoverBrush" Color="#334155" />
@@ -16,6 +16,9 @@
             <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F8FAFC" />
             <SolidColorBrush x:Key="TextSecondaryBrush" Color="#94A3B8" />
             <SolidColorBrush x:Key="TextMutedBrush" Color="#64748B" />
+            <SolidColorBrush x:Key="InputBgBrush" Color="#0F172A" />
+            <SolidColorBrush x:Key="CardSubBgBrush" Color="#0F172A" />
+            <SolidColorBrush x:Key="PopupBgBrush" Color="#1E293B" />
             
             <SolidColorBrush x:Key="PrimaryAccentBrush" Color="#6366F1" />
             <SolidColorBrush x:Key="PrimaryAccentHoverBrush" Color="#4F46E5" />
@@ -139,15 +142,15 @@
                 <Setter Property="Margin" Value="0,0,0,16"/>
             </Style>
 
-            <!-- Modern Input Fields -->
+            <!-- Modern Input Fields (TextBox) -->
             <Style TargetType="TextBox">
-                <Setter Property="Background" Value="#0F172A"/>
+                <Setter Property="Background" Value="{DynamicResource InputBgBrush}"/>
                 <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
                 <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="Padding" Value="10,8"/>
                 <Setter Property="FontSize" Value="14"/>
-                <Setter Property="CaretBrush" Value="White"/>
+                <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="TextBox">
@@ -157,6 +160,94 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+            </Style>
+
+            <!-- Custom ComboBox Item Container Style -->
+            <Style TargetType="ComboBoxItem">
+                <Setter Property="Background" Value="{DynamicResource PopupBgBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                <Setter Property="Padding" Value="10,8"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ComboBoxItem">
+                            <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsHighlighted" Value="true">
+                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource BgHoverBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="true">
+                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource PrimaryAccentBrush}"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Custom ComboBox ToggleButton -->
+            <Style x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border Background="{DynamicResource InputBgBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="6">
+                                <Path x:Name="Arrow" Data="M 0 0 L 4 4 L 8 0 Z" Fill="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Reusable FocusFlow ComboBox Style -->
+            <Style TargetType="ComboBox">
+                <Setter Property="Background" Value="{DynamicResource InputBgBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="10,8"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource {x:Type ComboBoxItem}}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ComboBox">
+                            <Grid>
+                                <ToggleButton Name="ToggleButton" Style="{StaticResource ComboBoxToggleButton}" Focusable="false" IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press"/>
+                                <ContentPresenter Name="ContentSite" IsHitTestVisible="False" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" Margin="10,0,30,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                <TextBox x:Name="PART_EditableTextBox" Style="{x:Null}" Template="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,30,0" Focusable="True" Background="Transparent" Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                                <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
+                                    <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                        <Border x:Name="DropDownBorder" Background="{DynamicResource PopupBgBrush}" BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}" CornerRadius="6" Margin="0,4,0,0">
+                                            <ScrollViewer Margin="4" SnapsToDevicePixels="True">
+                                                <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                            </ScrollViewer>
+                                        </Border>
+                                    </Grid>
+                                </Popup>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- CheckBox Style -->
+            <Style TargetType="CheckBox">
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+
+            <!-- DatePicker Style -->
+            <Style TargetType="DatePicker">
+                <Setter Property="Background" Value="{DynamicResource InputBgBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="6,4"/>
+                <Setter Property="FontSize" Value="14"/>
             </Style>
 
             <!-- View DataTemplates -->

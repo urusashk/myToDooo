@@ -25,27 +25,27 @@
             </Grid.RowDefinitions>
 
             <!-- Navigation Header -->
-            <Border Grid.Row="0" Style="{StaticResource CardBorderStyle}" Padding="16,12" Margin="0,0,0,14">
+            <Border Grid.Row="0" Style="{DynamicResource CardBorderStyle}" Padding="16,12" Margin="0,0,0,14">
                 <DockPanel LastChildFill="False">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Button Content="◀" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding PreviousMonthCommand}" Padding="10,6" Margin="0,0,6,0"/>
-                        <TextBlock Text="{Binding CurrentMonthYearHeader}" Style="{StaticResource Heading2}" VerticalAlignment="Center" Margin="12,0"/>
-                        <Button Content="▶" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding NextMonthCommand}" Padding="10,6" Margin="6,0,0,0"/>
+                        <Button Content="◀" Style="{DynamicResource SecondaryButtonStyle}" Command="{Binding PreviousMonthCommand}" Padding="10,6" Margin="0,0,6,0"/>
+                        <TextBlock Text="{Binding CurrentMonthYearHeader}" Style="{DynamicResource Heading2}" VerticalAlignment="Center" Margin="12,0"/>
+                        <Button Content="▶" Style="{DynamicResource SecondaryButtonStyle}" Command="{Binding NextMonthCommand}" Padding="10,6" Margin="6,0,0,0"/>
                     </StackPanel>
 
-                    <Button DockPanel.Dock="Right" Content="Today" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding TodayCommand}" Padding="16,6"/>
+                    <Button DockPanel.Dock="Right" Content="Today" Style="{DynamicResource SecondaryButtonStyle}" Command="{Binding TodayCommand}" Padding="16,6"/>
                 </DockPanel>
             </Border>
 
             <!-- Days of Week Header -->
             <UniformGrid Grid.Row="1" Columns="7" Margin="0,0,0,8">
-                <TextBlock Text="Sun" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
-                <TextBlock Text="Mon" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
-                <TextBlock Text="Tue" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
-                <TextBlock Text="Wed" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
-                <TextBlock Text="Thu" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
-                <TextBlock Text="Fri" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
-                <TextBlock Text="Sat" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Sun" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Mon" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Tue" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Wed" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Thu" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Fri" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Sat" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center"/>
             </UniformGrid>
 
             <!-- Calendar Month Grid -->
@@ -59,7 +59,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <!-- Clickable Day Cell -->
-                            <Border Background="#1E293B" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="2" Padding="6" MinHeight="90">
+                            <Border Background="{DynamicResource CardSubBgBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="2" Padding="6" MinHeight="90">
                                 <Border.InputBindings>
                                     <MouseBinding MouseAction="LeftClick" 
                                                   Command="{Binding DataContext.CreateTaskOnDateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
@@ -68,9 +68,9 @@
                                 <StackPanel>
                                     <DockPanel LastChildFill="False">
                                         <TextBlock Text="{Binding DayNumber}" FontSize="13" FontWeight="Bold" 
-                                                   Foreground="{StaticResource TextPrimaryBrush}" DockPanel.Dock="Left"/>
+                                                   Foreground="{DynamicResource TextPrimaryBrush}" DockPanel.Dock="Left"/>
                                         <!-- Today Badge -->
-                                        <Border Background="{StaticResource PrimaryAccentBrush}" CornerRadius="4" Padding="4,1" 
+                                        <Border Background="{DynamicResource PrimaryAccentBrush}" CornerRadius="4" Padding="4,1" 
                                                 DockPanel.Dock="Right" Visibility="{Binding IsToday, Converter={StaticResource BoolToVisConverter}}">
                                             <TextBlock Text="TODAY" FontSize="8" FontWeight="Bold" Foreground="White"/>
                                         </Border>
@@ -104,11 +104,11 @@
         <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <!-- Overdue Tasks Section -->
-                <Border Style="{StaticResource CardBorderStyle}" Padding="16">
+                <Border Style="{DynamicResource CardBorderStyle}" Padding="16">
                     <StackPanel>
                         <DockPanel LastChildFill="False" Margin="0,0,0,12">
-                            <TextBlock Text="⚠️ Overdue Tasks" Style="{StaticResource Heading2}" Foreground="{StaticResource DangerBrush}" DockPanel.Dock="Left"/>
-                            <Border Background="{StaticResource DangerBrush}" CornerRadius="10" Padding="8,2" DockPanel.Dock="Right">
+                            <TextBlock Text="⚠️ Overdue Tasks" Style="{DynamicResource Heading2}" Foreground="{DynamicResource DangerBrush}" DockPanel.Dock="Left"/>
+                            <Border Background="{DynamicResource DangerBrush}" CornerRadius="10" Padding="8,2" DockPanel.Dock="Right">
                                 <TextBlock Text="{Binding OverdueTasks.Count}" FontSize="12" FontWeight="Bold" Foreground="White"/>
                             </Border>
                         </DockPanel>
@@ -116,17 +116,17 @@
                         <ItemsControl ItemsSource="{Binding OverdueTasks}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="#0F172A" BorderBrush="{StaticResource DangerBrush}" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="0,0,0,6">
+                                    <Border Background="{DynamicResource CardSubBgBrush}" BorderBrush="{DynamicResource DangerBrush}" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="0,0,0,6">
                                         <Border.InputBindings>
                                             <MouseBinding MouseAction="LeftClick" 
                                                           Command="{Binding DataContext.EditTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                                           CommandParameter="{Binding}"/>
                                         </Border.InputBindings>
                                         <StackPanel>
-                                            <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                            <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
                                             <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                                <TextBlock Text="Due: " FontSize="11" Foreground="{StaticResource DangerBrush}"/>
-                                                <TextBlock Text="{Binding DueDateDisplay}" FontSize="11" Foreground="{StaticResource DangerBrush}" FontWeight="Bold"/>
+                                                <TextBlock Text="Due: " FontSize="11" Foreground="{DynamicResource DangerBrush}"/>
+                                                <TextBlock Text="{Binding DueDateDisplay}" FontSize="11" Foreground="{DynamicResource DangerBrush}" FontWeight="Bold"/>
                                             </StackPanel>
                                         </StackPanel>
                                     </Border>
@@ -137,13 +137,13 @@
                 </Border>
 
                 <!-- Upcoming Reminders Panel -->
-                <Border Style="{StaticResource CardBorderStyle}" Padding="16">
+                <Border Style="{DynamicResource CardBorderStyle}" Padding="16">
                     <StackPanel>
-                        <TextBlock Text="📅 Next 7 Days" Style="{StaticResource Heading2}" Margin="0,0,0,12"/>
+                        <TextBlock Text="📅 Next 7 Days" Style="{DynamicResource Heading2}" Margin="0,0,0,12"/>
                         <ItemsControl ItemsSource="{Binding UpcomingTasks}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,8">
+                                    <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,8">
                                         <Border.InputBindings>
                                             <MouseBinding MouseAction="LeftClick" 
                                                           Command="{Binding DataContext.EditTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
@@ -151,8 +151,8 @@
                                         </Border.InputBindings>
                                         <Grid>
                                             <StackPanel>
-                                                <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                                <TextBlock Text="{Binding DueDateDisplay}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                                <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                                <TextBlock Text="{Binding DueDateDisplay}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
                                             </StackPanel>
                                         </Grid>
                                     </Border>

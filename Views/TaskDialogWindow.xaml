@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Task Details" Height="680" Width="540"
         WindowStartupLocation="CenterOwner"
-        Background="{StaticResource BgDarkBrush}"
+        Background="{DynamicResource BgDarkBrush}"
         ResizeMode="NoResize">
 
     <Border Padding="24">
@@ -15,17 +15,17 @@
             </Grid.RowDefinitions>
 
             <!-- Dialog Header -->
-            <TextBlock Grid.Row="0" x:Name="HeaderTitleText" Text="Task Details" Style="{StaticResource Heading1}" Margin="0,0,0,20"/>
+            <TextBlock Grid.Row="0" x:Name="HeaderTitleText" Text="Task Details" Style="{DynamicResource Heading1}" Margin="0,0,0,20"/>
 
             <!-- Scrollable Form Controls -->
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                 <StackPanel>
                     <!-- Title -->
-                    <TextBlock Text="TASK TITLE *" Style="{StaticResource SubText}" Margin="0,0,0,6"/>
+                    <TextBlock Text="TASK TITLE *" Style="{DynamicResource SubText}" Margin="0,0,0,6"/>
                     <TextBox x:Name="TitleInput" Height="36" Margin="0,0,0,16"/>
 
                     <!-- Notes -->
-                    <TextBlock Text="NOTES / DESCRIPTION" Style="{StaticResource SubText}" Margin="0,0,0,6"/>
+                    <TextBlock Text="NOTES / DESCRIPTION" Style="{DynamicResource SubText}" Margin="0,0,0,6"/>
                     <TextBox x:Name="NotesInput" Height="70" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,0,0,16"/>
 
                     <Grid Margin="0,0,0,16">
@@ -36,7 +36,7 @@
 
                         <!-- Priority -->
                         <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                            <TextBlock Text="PRIORITY" Style="{StaticResource SubText}" Margin="0,0,0,6"/>
+                            <TextBlock Text="PRIORITY" Style="{DynamicResource SubText}" Margin="0,0,0,6"/>
                             <ComboBox x:Name="PriorityCombo" Height="36">
                                 <ComboBoxItem Content="Low" Tag="0"/>
                                 <ComboBoxItem Content="Medium" Tag="1" IsSelected="True"/>
@@ -46,7 +46,7 @@
 
                         <!-- Project -->
                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                            <TextBlock Text="PROJECT" Style="{StaticResource SubText}" Margin="0,0,0,6"/>
+                            <TextBlock Text="PROJECT" Style="{DynamicResource SubText}" Margin="0,0,0,6"/>
                             <ComboBox x:Name="ProjectCombo" DisplayMemberPath="Name" Height="36"/>
                         </StackPanel>
                     </Grid>
@@ -59,13 +59,13 @@
 
                         <!-- Due Date -->
                         <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                            <TextBlock Text="DUE DATE" Style="{StaticResource SubText}" Margin="0,0,0,6"/>
+                            <TextBlock Text="DUE DATE" Style="{DynamicResource SubText}" Margin="0,0,0,6"/>
                             <DatePicker x:Name="DueDatePicker" Height="36"/>
                         </StackPanel>
 
                         <!-- Estimated Pomodoros -->
                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                            <TextBlock Text="ESTIMATED POMODOROS" Style="{StaticResource SubText}" Margin="0,0,0,6"/>
+                            <TextBlock Text="ESTIMATED POMODOROS" Style="{DynamicResource SubText}" Margin="0,0,0,6"/>
                             <TextBox x:Name="PomodoroEstimateInput" Text="1" Height="36"/>
                         </StackPanel>
                     </Grid>
@@ -78,7 +78,7 @@
 
                         <!-- Recurrence -->
                         <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                            <TextBlock Text="RECURRENCE" Style="{StaticResource SubText}" Margin="0,0,0,6"/>
+                            <TextBlock Text="RECURRENCE" Style="{DynamicResource SubText}" Margin="0,0,0,6"/>
                             <ComboBox x:Name="RecurrenceCombo" Height="36">
                                 <ComboBoxItem Content="None" Tag="0" IsSelected="True"/>
                                 <ComboBoxItem Content="Daily" Tag="1"/>
@@ -89,18 +89,18 @@
 
                         <!-- Reminder Date -->
                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                            <TextBlock Text="REMINDER DATE" Style="{StaticResource SubText}" Margin="0,0,0,6"/>
+                            <TextBlock Text="REMINDER DATE" Style="{DynamicResource SubText}" Margin="0,0,0,6"/>
                             <DatePicker x:Name="ReminderDatePicker" Height="36"/>
                         </StackPanel>
                     </Grid>
 
                     <!-- Subtasks Checklist Section -->
-                    <Border Style="{StaticResource CardBorderStyle}" Padding="16" Margin="0,8,0,0">
+                    <Border Style="{DynamicResource CardBorderStyle}" Padding="16" Margin="0,8,0,0">
                         <StackPanel>
-                            <TextBlock Text="Subtasks / Checklist" Style="{StaticResource Heading2}" Margin="0,0,0,12"/>
+                            <TextBlock Text="Subtasks / Checklist" Style="{DynamicResource Heading2}" Margin="0,0,0,12"/>
 
                             <DockPanel Margin="0,0,0,12">
-                                <Button x:Name="AddSubtaskBtn" DockPanel.Dock="Right" Content="+ Add" Style="{StaticResource SecondaryButtonStyle}" Click="AddSubtask_Click" Padding="12,4" Margin="8,0,0,0"/>
+                                <Button x:Name="AddSubtaskBtn" DockPanel.Dock="Right" Content="+ Add" Style="{DynamicResource SecondaryButtonStyle}" Click="AddSubtask_Click" Padding="12,4" Margin="8,0,0,0"/>
                                 <TextBox x:Name="NewSubtaskInput" Height="34"/>
                             </DockPanel>
 
@@ -108,9 +108,9 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <DockPanel Margin="0,4">
-                                            <Button DockPanel.Dock="Right" Content="✕" Style="{StaticResource SecondaryButtonStyle}" Click="DeleteSubtask_Click" Padding="6,2" FontSize="10"/>
+                                            <Button DockPanel.Dock="Right" Content="✕" Style="{DynamicResource SecondaryButtonStyle}" Click="DeleteSubtask_Click" Padding="6,2" FontSize="10"/>
                                             <CheckBox IsChecked="{Binding IsCompleted}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                            <TextBlock Text="{Binding Title}" FontSize="13" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Title}" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
                                         </DockPanel>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -122,8 +122,8 @@
 
             <!-- Bottom Action Buttons -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-                <Button Content="Cancel" Style="{StaticResource SecondaryButtonStyle}" Click="Cancel_Click" Padding="16,8" Margin="0,0,8,0"/>
-                <Button Content="Save Task" Style="{StaticResource PrimaryButtonStyle}" Click="Save_Click" Padding="20,8"/>
+                <Button Content="Cancel" Style="{DynamicResource SecondaryButtonStyle}" Click="Cancel_Click" Padding="16,8" Margin="0,0,8,0"/>
+                <Button Content="Save Task" Style="{DynamicResource PrimaryButtonStyle}" Click="Save_Click" Padding="20,8"/>
             </StackPanel>
         </Grid>
     </Border>

@@ -6,7 +6,7 @@
         Height="780" Width="1240"
         MinHeight="650" MinWidth="950"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource BgDarkBrush}"
+        Background="{DynamicResource BgDarkBrush}"
         WindowStyle="SingleBorderWindow">
 
     <Window.DataContext>
@@ -22,79 +22,79 @@
         </Grid.ColumnDefinitions>
 
         <!-- Left Sidebar Navigation -->
-        <Border Grid.Column="0" Background="#0F172A" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0">
+        <Border Grid.Column="0" Background="{DynamicResource CardSubBgBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0">
             <DockPanel LastChildFill="True">
                 <!-- App Logo & Branding -->
                 <StackPanel DockPanel.Dock="Top" Margin="24,24,24,32" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Border Width="40" Height="40" CornerRadius="10" Background="{StaticResource PrimaryAccentBrush}">
+                    <Border Width="40" Height="40" CornerRadius="10" Background="{DynamicResource PrimaryAccentBrush}">
                         <TextBlock Text="⏱️" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="FocusFlow" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                        <TextBlock Text="v1.0 Desktop" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
+                        <TextBlock Text="FocusFlow" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        <TextBlock Text="v1.0 Desktop" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
                     </StackPanel>
                 </StackPanel>
 
                 <!-- Footer Quick Focus Widget -->
-                <Border DockPanel.Dock="Bottom" Margin="16" Style="{StaticResource CardBorderStyle}" Padding="16">
+                <Border DockPanel.Dock="Bottom" Margin="16" Style="{DynamicResource CardBorderStyle}" Padding="16">
                     <StackPanel>
-                        <TextBlock Text="Focus Session" Style="{StaticResource SubText}" Margin="0,0,0,4"/>
-                        <TextBlock Text="{Binding PomodoroViewModel.TimerService.TimeRemainingFormatted}" FontSize="24" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}"/>
-                        <TextBlock Text="{Binding PomodoroViewModel.TimerService.CurrentSessionType}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,2,0,12"/>
-                        <Button Content="Quick Timer" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding NavigatePomodoroCommand}" Padding="8,6" FontSize="12"/>
+                        <TextBlock Text="Focus Session" Style="{DynamicResource SubText}" Margin="0,0,0,4"/>
+                        <TextBlock Text="{Binding PomodoroViewModel.TimerService.TimeRemainingFormatted}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryAccentBrush}"/>
+                        <TextBlock Text="{Binding PomodoroViewModel.TimerService.CurrentSessionType}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,2,0,12"/>
+                        <Button Content="Quick Timer" Style="{DynamicResource PrimaryButtonStyle}" Command="{Binding NavigatePomodoroCommand}" Padding="8,6" FontSize="12"/>
                     </StackPanel>
                 </Border>
 
                 <!-- Navigation Links -->
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="16,0">
-                        <TextBlock Text="MAIN MENU" FontSize="11" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" Margin="8,0,0,12"/>
+                        <TextBlock Text="MAIN MENU" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" Margin="8,0,0,12"/>
 
-                        <Button Command="{Binding NavigateDashboardCommand}" Style="{StaticResource NavButtonStyle}">
+                        <Button Command="{Binding NavigateDashboardCommand}" Style="{DynamicResource NavButtonStyle}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="📊" Margin="0,0,12,0" FontSize="16"/>
                                 <TextBlock Text="Dashboard" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Command="{Binding NavigateTasksCommand}" Style="{StaticResource NavButtonStyle}">
+                        <Button Command="{Binding NavigateTasksCommand}" Style="{DynamicResource NavButtonStyle}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="✅" Margin="0,0,12,0" FontSize="16"/>
                                 <TextBlock Text="Tasks" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Command="{Binding NavigateProjectsCommand}" Style="{StaticResource NavButtonStyle}">
+                        <Button Command="{Binding NavigateProjectsCommand}" Style="{DynamicResource NavButtonStyle}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="📁" Margin="0,0,12,0" FontSize="16"/>
                                 <TextBlock Text="Projects" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Command="{Binding NavigateCalendarCommand}" Style="{StaticResource NavButtonStyle}">
+                        <Button Command="{Binding NavigateCalendarCommand}" Style="{DynamicResource NavButtonStyle}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="📅" Margin="0,0,12,0" FontSize="16"/>
                                 <TextBlock Text="Calendar" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Command="{Binding NavigatePomodoroCommand}" Style="{StaticResource NavButtonStyle}">
+                        <Button Command="{Binding NavigatePomodoroCommand}" Style="{DynamicResource NavButtonStyle}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="⏱️" Margin="0,0,12,0" FontSize="16"/>
                                 <TextBlock Text="Focus Timer" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <TextBlock Text="ANALYTICS &amp; PREFS" FontSize="11" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" Margin="8,24,0,12"/>
+                        <TextBlock Text="ANALYTICS &amp; PREFS" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" Margin="8,24,0,12"/>
 
-                        <Button Command="{Binding NavigateReportsCommand}" Style="{StaticResource NavButtonStyle}">
+                        <Button Command="{Binding NavigateReportsCommand}" Style="{DynamicResource NavButtonStyle}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="📈" Margin="0,0,12,0" FontSize="16"/>
                                 <TextBlock Text="Reports" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Command="{Binding NavigateSettingsCommand}" Style="{StaticResource NavButtonStyle}">
+                        <Button Command="{Binding NavigateSettingsCommand}" Style="{DynamicResource NavButtonStyle}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="⚙️" Margin="0,0,12,0" FontSize="16"/>
                                 <TextBlock Text="Settings" VerticalAlignment="Center"/>
@@ -106,7 +106,7 @@
         </Border>
 
         <!-- Main Content Area -->
-        <Grid Grid.Column="1" Background="{StaticResource BgDarkBrush}">
+        <Grid Grid.Column="1" Background="{DynamicResource BgDarkBrush}">
             <Grid.RowDefinitions>
                 <!-- Top Header -->
                 <RowDefinition Height="64" />
@@ -115,7 +115,7 @@
             </Grid.RowDefinitions>
 
             <!-- Top Header Bar -->
-            <Border Grid.Row="0" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="28,0">
+            <Border Grid.Row="0" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="28,0">
                 <Grid VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -123,15 +123,15 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="{Binding ActiveTabName}" Style="{StaticResource Heading1}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding ActiveTabName}" Style="{DynamicResource Heading1}" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <!-- Active Task & Timer Status -->
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Border Background="{StaticResource BgCardBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="20" Padding="14,6">
+                        <Border Background="{DynamicResource BgCardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="20" Padding="14,6">
                             <StackPanel Orientation="Horizontal">
-                                <Ellipse Width="8" Height="8" Fill="{StaticResource SuccessBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="SQLite Connected • Local Storage" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                                <Ellipse Width="8" Height="8" Fill="{DynamicResource SuccessBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="SQLite Connected • Local Storage" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>

@@ -15,15 +15,15 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0">
-                    <TextBlock Text="{Binding TodayDateFormatted}" FontSize="14" Foreground="{StaticResource PrimaryAccentBrush}" FontWeight="SemiBold"/>
-                    <TextBlock Text="Welcome Back! Ready to Focus?" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,4,0,0"/>
+                    <TextBlock Text="{Binding TodayDateFormatted}" FontSize="14" Foreground="{DynamicResource PrimaryAccentBrush}" FontWeight="SemiBold"/>
+                    <TextBlock Text="Welcome Back! Ready to Focus?" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,4,0,0"/>
                 </StackPanel>
 
-                <Button Grid.Column="1" Content="⚡ Start Focus Session" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding StartFocusCommand}" Padding="20,12"/>
+                <Button Grid.Column="1" Content="⚡ Start Focus Session" Style="{DynamicResource PrimaryButtonStyle}" Command="{Binding StartFocusCommand}" Padding="20,12"/>
             </Grid>
 
             <!-- Quick Add Task Bar -->
-            <Border Style="{StaticResource CardBorderStyle}" Padding="16,14" Margin="0,0,0,20">
+            <Border Style="{DynamicResource CardBorderStyle}" Padding="16,14" Margin="0,0,0,20">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -42,7 +42,7 @@
                     <ComboBox Grid.Column="2" ItemsSource="{Binding Priorities}" SelectedItem="{Binding QuickTaskPriority}" 
                               Margin="0,0,12,0" Height="36" VerticalAlignment="Center"/>
 
-                    <Button Grid.Column="3" Content="+ Add Task" Style="{StaticResource PrimaryButtonStyle}" 
+                    <Button Grid.Column="3" Content="+ Add Task" Style="{DynamicResource PrimaryButtonStyle}" 
                             Command="{Binding QuickAddTaskCommand}" Height="36" VerticalAlignment="Center" Padding="16,0"/>
                 </Grid>
             </Border>
@@ -50,45 +50,45 @@
             <!-- Metrics Summary Cards -->
             <UniformGrid Columns="4" Margin="0,0,0,20">
                 <!-- Today's Tasks -->
-                <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,8,0">
+                <Border Style="{DynamicResource CardBorderStyle}" Margin="0,0,8,0">
                     <StackPanel>
-                        <TextBlock Text="COMPLETED TASKS TODAY" Style="{StaticResource SubText}"/>
+                        <TextBlock Text="COMPLETED TASKS TODAY" Style="{DynamicResource SubText}"/>
                         <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                            <TextBlock Text="{Binding CompletedTasksToday}" FontSize="28" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}"/>
-                            <TextBlock Text=" tasks" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
+                            <TextBlock Text="{Binding CompletedTasksToday}" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource SuccessBrush}"/>
+                            <TextBlock Text=" tasks" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
 
                 <!-- Remaining Tasks -->
-                <Border Style="{StaticResource CardBorderStyle}" Margin="4,0,4,0">
+                <Border Style="{DynamicResource CardBorderStyle}" Margin="4,0,4,0">
                     <StackPanel>
-                        <TextBlock Text="REMAINING TASKS TODAY" Style="{StaticResource SubText}"/>
+                        <TextBlock Text="REMAINING TASKS TODAY" Style="{DynamicResource SubText}"/>
                         <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                            <TextBlock Text="{Binding RemainingTasksToday}" FontSize="28" FontWeight="Bold" Foreground="{StaticResource WarningBrush}"/>
-                            <TextBlock Text=" pending" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
+                            <TextBlock Text="{Binding RemainingTasksToday}" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource WarningBrush}"/>
+                            <TextBlock Text=" pending" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
 
                 <!-- Focus Time Today -->
-                <Border Style="{StaticResource CardBorderStyle}" Margin="4,0,4,0">
+                <Border Style="{DynamicResource CardBorderStyle}" Margin="4,0,4,0">
                     <StackPanel>
-                        <TextBlock Text="FOCUS TIME TODAY" Style="{StaticResource SubText}"/>
+                        <TextBlock Text="FOCUS TIME TODAY" Style="{DynamicResource SubText}"/>
                         <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                            <TextBlock Text="{Binding TodayFocusMinutes}" FontSize="28" FontWeight="Bold" Foreground="{StaticResource PrimaryAccentBrush}"/>
-                            <TextBlock Text=" mins" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
+                            <TextBlock Text="{Binding TodayFocusMinutes}" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource PrimaryAccentBrush}"/>
+                            <TextBlock Text=" mins" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
 
                 <!-- Pomodoros Completed -->
-                <Border Style="{StaticResource CardBorderStyle}" Margin="8,0,0,0">
+                <Border Style="{DynamicResource CardBorderStyle}" Margin="8,0,0,0">
                     <StackPanel>
-                        <TextBlock Text="POMODOROS TODAY" Style="{StaticResource SubText}"/>
+                        <TextBlock Text="POMODOROS TODAY" Style="{DynamicResource SubText}"/>
                         <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                             <TextBlock Text="{Binding TodayPomodoros}" FontSize="28" FontWeight="Bold" Foreground="#EC4899"/>
-                            <TextBlock Text=" sessions" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
+                            <TextBlock Text=" sessions" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -102,17 +102,17 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Today's Tasks List -->
-                <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,12,0">
+                <Border Grid.Column="0" Style="{DynamicResource CardBorderStyle}" Margin="0,0,12,0">
                     <StackPanel>
                         <DockPanel LastChildFill="False" Margin="0,0,0,16">
-                            <TextBlock Text="Today's Target Tasks" Style="{StaticResource Heading2}" DockPanel.Dock="Left"/>
-                            <TextBlock Text="{Binding TodayTasks.Count, StringFormat='{}{0} Total'}" Style="{StaticResource SubText}" DockPanel.Dock="Right" VerticalAlignment="Center"/>
+                            <TextBlock Text="Today's Target Tasks" Style="{DynamicResource Heading2}" DockPanel.Dock="Left"/>
+                            <TextBlock Text="{Binding TodayTasks.Count, StringFormat='{}{0} Total'}" Style="{DynamicResource SubText}" DockPanel.Dock="Right" VerticalAlignment="Center"/>
                         </DockPanel>
 
                         <ItemsControl ItemsSource="{Binding TodayTasks}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="#0F172A" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,8">
+                                    <Border Background="{DynamicResource CardSubBgBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,8">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
@@ -128,25 +128,25 @@
 
                                             <!-- Task Details -->
                                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                                <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
                                                 <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
                                                     <Border Background="{Binding ProjectColor}" CornerRadius="4" Padding="6,2" Margin="0,0,8,0">
                                                         <TextBlock Text="{Binding ProjectName}" FontSize="10" Foreground="White" FontWeight="Bold"/>
                                                     </Border>
-                                                    <TextBlock Text="{Binding DueDateDisplay}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                                    <TextBlock Text="{Binding DueDateDisplay}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
                                                 </StackPanel>
                                             </StackPanel>
 
                                             <!-- Pomodoro Count Badge -->
                                             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
                                                 <TextBlock Text="🍅 " FontSize="12"/>
-                                                <TextBlock Text="{Binding CompletedPomodoros}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                                <TextBlock Text="/" FontSize="12" Foreground="{StaticResource TextMutedBrush}"/>
-                                                <TextBlock Text="{Binding EstimatedPomodoros}" FontSize="12" Foreground="{StaticResource TextMutedBrush}"/>
+                                                <TextBlock Text="{Binding CompletedPomodoros}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                                <TextBlock Text="/" FontSize="12" Foreground="{DynamicResource TextMutedBrush}"/>
+                                                <TextBlock Text="{Binding EstimatedPomodoros}" FontSize="12" Foreground="{DynamicResource TextMutedBrush}"/>
                                             </StackPanel>
 
                                             <!-- Focus Launch Button -->
-                                            <Button Grid.Column="3" Content="Focus" Style="{StaticResource SecondaryButtonStyle}" 
+                                            <Button Grid.Column="3" Content="Focus" Style="{DynamicResource SecondaryButtonStyle}" 
                                                     Command="{Binding DataContext.StartTaskFocusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                                     CommandParameter="{Binding}" Padding="10,4" FontSize="12"/>
                                         </Grid>
@@ -160,11 +160,11 @@
                 <!-- Sidebar: Overdue Alerts & Upcoming Activity -->
                 <StackPanel Grid.Column="1">
                     <!-- Overdue Tasks Banner -->
-                    <Border Style="{StaticResource CardBorderStyle}" Padding="16" Margin="0,0,0,16">
+                    <Border Style="{DynamicResource CardBorderStyle}" Padding="16" Margin="0,0,0,16">
                         <StackPanel>
                             <DockPanel LastChildFill="False" Margin="0,0,0,10">
-                                <TextBlock Text="⚠️ Overdue Tasks" Style="{StaticResource Heading2}" Foreground="{StaticResource DangerBrush}" DockPanel.Dock="Left"/>
-                                <Border Background="{StaticResource DangerBrush}" CornerRadius="10" Padding="8,2" DockPanel.Dock="Right">
+                                <TextBlock Text="⚠️ Overdue Tasks" Style="{DynamicResource Heading2}" Foreground="{DynamicResource DangerBrush}" DockPanel.Dock="Left"/>
+                                <Border Background="{DynamicResource DangerBrush}" CornerRadius="10" Padding="8,2" DockPanel.Dock="Right">
                                     <TextBlock Text="{Binding OverdueTasks.Count}" FontSize="12" FontWeight="Bold" Foreground="White"/>
                                 </Border>
                             </DockPanel>
@@ -172,11 +172,11 @@
                             <ItemsControl ItemsSource="{Binding OverdueTasks}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,6">
+                                        <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,6">
                                             <Grid>
                                                 <StackPanel>
-                                                    <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                                    <TextBlock Text="{Binding DueDateDisplay, StringFormat='Due: {0}'}" FontSize="11" Foreground="{StaticResource DangerBrush}" FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                                    <TextBlock Text="{Binding DueDateDisplay, StringFormat='Due: {0}'}" FontSize="11" Foreground="{DynamicResource DangerBrush}" FontWeight="Bold"/>
                                                 </StackPanel>
                                             </Grid>
                                         </Border>
@@ -187,17 +187,17 @@
                     </Border>
 
                     <!-- Upcoming Reminders -->
-                    <Border Style="{StaticResource CardBorderStyle}">
+                    <Border Style="{DynamicResource CardBorderStyle}">
                         <StackPanel>
-                            <TextBlock Text="Upcoming Reminders" Style="{StaticResource Heading2}" Margin="0,0,0,12"/>
+                            <TextBlock Text="Upcoming Reminders" Style="{DynamicResource Heading2}" Margin="0,0,0,12"/>
                             <ItemsControl ItemsSource="{Binding UpcomingTasks}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,8">
+                                        <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,8">
                                             <Grid>
                                                 <StackPanel>
-                                                    <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                                                    <TextBlock Text="{Binding DueDateDisplay}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                                    <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                                    <TextBlock Text="{Binding DueDateDisplay}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
                                                 </StackPanel>
                                             </Grid>
                                         </Border>

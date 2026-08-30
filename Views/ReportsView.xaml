@@ -150,7 +150,7 @@
                     </ItemsControl>
 
                     <!-- Empty State Fallback -->
-                    <Border Background="#0F172A" CornerRadius="8" Padding="16" Margin="0,16,0,0" 
+                    <Border Background="{DynamicResource CardSubBgBrush}" CornerRadius="8" Padding="16" Margin="0,16,0,0" 
                             Visibility="{Binding HasFocusData, Converter={StaticResource BoolToVisConverter}}">
                     </Border>
                 </StackPanel>
@@ -192,7 +192,7 @@
 
                                         <!-- Progress Bar with Mode=OneWay -->
                                         <ProgressBar Grid.Column="2" Value="{Binding CompletionPercentage, Mode=OneWay}" Maximum="100" Height="8" 
-                                                     Foreground="{DynamicResource PrimaryAccentBrush}" Background="#0F172A" 
+                                                     Foreground="{DynamicResource PrimaryAccentBrush}" Background="{DynamicResource CardSubBgBrush}" 
                                                      VerticalAlignment="Center" Margin="16,0"/>
 
                                         <!-- Focus Minutes & Pomodoros -->

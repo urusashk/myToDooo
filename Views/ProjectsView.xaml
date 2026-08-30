@@ -88,7 +88,7 @@
 
                                 <!-- Progress Bar with Mode=OneWay -->
                                 <ProgressBar Grid.Row="2" Value="{Binding CompletionPercentage, Mode=OneWay}" Maximum="100" Height="6" 
-                                             Foreground="{DynamicResource PrimaryAccentBrush}" Background="#0F172A" Margin="0,0,0,16"/>
+                                             Foreground="{DynamicResource PrimaryAccentBrush}" Background="{DynamicResource CardSubBgBrush}" Margin="0,0,0,16"/>
 
                                 <!-- Action Link -->
                                 <Button Grid.Row="3" Content="View Project Tasks ➔" Style="{DynamicResource SecondaryButtonStyle}" 
