@@ -1,4 +1,7 @@
+using System;
+using System.IO;
 using System.Windows.Input;
+using Microsoft.Win32;
 using FocusFlow.Data;
 using FocusFlow.Models;
 using FocusFlow.Services;
@@ -7,6 +10,9 @@ namespace FocusFlow.ViewModels
 {
     public class SettingsViewModel : ViewModelBase
     {
+        private const string StartupRegistryKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
+        private const string AppName = "FocusFlow";
+
         private UserSettings _settings;
 
         public UserSettings Settings
@@ -49,6 +55,7 @@ namespace FocusFlow.ViewModels
             DatabaseService.Instance.SaveSettings(Settings);
             ThemeService.Instance.ApplyTheme(Settings.Theme);
             PomodoroTimerService.Instance.ResetToMode(PomodoroTimerService.Instance.CurrentSessionType);
+            ApplyStartupSetting(Settings.LaunchAtStartup);
             NotificationService.Instance.ShowNotification("Settings Saved", "Your FocusFlow preferences have been updated.");
         }
 
@@ -58,7 +65,37 @@ namespace FocusFlow.ViewModels
             DatabaseService.Instance.SaveSettings(Settings);
             ThemeService.Instance.ApplyTheme(Settings.Theme);
             PomodoroTimerService.Instance.ResetToMode(SessionType.Focus);
+            ApplyStartupSetting(Settings.LaunchAtStartup);
             NotificationService.Instance.ShowNotification("Settings Reset", "Restored default settings.");
+        }
+
+        public static void ApplyStartupSetting(bool enableStartup)
+        {
+            try
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(StartupRegistryKey, true);
+                if (key == null) return;
+
+                if (enableStartup)
+                {
+                    string? exePath = Environment.ProcessPath;
+                    if (!string.IsNullOrEmpty(exePath) && File.Exists(exePath))
+                    {
+                        key.SetValue(AppName, $"\"{exePath}\"");
+                    }
+                }
+                else
+                {
+                    if (key.GetValue(AppName) != null)
+                    {
+                        key.DeleteValue(AppName, false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                App.LogLifecycle($"ApplyStartupSetting error: {ex.Message}");
+            }
         }
     }
 }

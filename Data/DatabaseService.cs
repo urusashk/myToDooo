@@ -503,6 +503,15 @@ namespace FocusFlow.Data
             cmd.ExecuteNonQuery();
         }
 
+        public void DismissHistoricalReminders()
+        {
+            using var conn = GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "UPDATE Reminders SET IsTriggered = 1 WHERE IsTriggered = 0 AND ReminderDateTime <= @Now;";
+            cmd.Parameters.AddWithValue("@Now", DateTime.Now.ToString("o"));
+            cmd.ExecuteNonQuery();
+        }
+
         public void SyncTaskReminder(int taskId, string taskTitle, DateTime? reminderTime, RecurringPattern recurrence)
         {
             using var conn = GetConnection();

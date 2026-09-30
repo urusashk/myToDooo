@@ -125,12 +125,12 @@
             <!-- System Tray & Background Behavior Card -->
             <Border Style="{DynamicResource CardBorderStyle}" Padding="24" Margin="0,0,0,20">
                 <StackPanel>
-                    <TextBlock Text="System Tray &amp; Background Execution" Style="{DynamicResource Heading2}" Margin="0,0,0,16"/>
+                    <TextBlock Text="System Tray &amp; Windows Startup" Style="{DynamicResource Heading2}" Margin="0,0,0,16"/>
 
                     <CheckBox IsChecked="{Binding Settings.LaunchAtStartup}" Margin="0,0,0,8">
                         <StackPanel Margin="6,0,0,0">
-                            <TextBlock Text="Run in System Tray on Close" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                            <TextBlock Text="Closing main window minimizes FocusFlow to system tray without exiting process" Style="{DynamicResource SubText}"/>
+                            <TextBlock Text="Start FocusFlow with Windows" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Automatically launch FocusFlow on Windows startup" Style="{DynamicResource SubText}"/>
                         </StackPanel>
                     </CheckBox>
                 </StackPanel>

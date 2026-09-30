@@ -13,6 +13,8 @@ namespace FocusFlow.Services
 
         private readonly DispatcherTimer _timer;
 
+        private bool _isFirstCheck = true;
+
         public ReminderService()
         {
             _timer = new DispatcherTimer
@@ -26,6 +28,7 @@ namespace FocusFlow.Services
         {
             if (!_timer.IsEnabled)
             {
+                _isFirstCheck = true;
                 _timer.Start();
             }
         }
@@ -39,6 +42,16 @@ namespace FocusFlow.Services
         {
             var db = DatabaseService.Instance;
             var settings = db.GetSettings();
+
+            if (_isFirstCheck)
+            {
+                _isFirstCheck = false;
+                // On initial startup check, mark any historical reminders that expired while the application was closed as triggered
+                // so no unwanted sound or notification is played during application startup/initialization.
+                db.DismissHistoricalReminders();
+                return;
+            }
+
             var pending = db.GetPendingReminders();
 
             foreach (var reminder in pending)

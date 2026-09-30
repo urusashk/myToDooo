@@ -20,16 +20,36 @@ namespace FocusFlow.Services
 
             if (_notifyIcon == null)
             {
+                Icon appIcon = SystemIcons.Application;
+                try
+                {
+                    string iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "focusflow.ico");
+                    if (System.IO.File.Exists(iconPath))
+                    {
+                        appIcon = new Icon(iconPath);
+                    }
+                    else
+                    {
+                        string? procPath = Environment.ProcessPath;
+                        if (!string.IsNullOrEmpty(procPath) && System.IO.File.Exists(procPath))
+                        {
+                            var extracted = Icon.ExtractAssociatedIcon(procPath);
+                            if (extracted != null) appIcon = extracted;
+                        }
+                    }
+                }
+                catch { }
+
                 _notifyIcon = new NotifyIcon
                 {
-                    Icon = SystemIcons.Application,
-                    Text = "My Tasks - Pomodoro & Tasks",
+                    Icon = appIcon,
+                    Text = "FocusFlow - Pomodoro & Tasks",
                     Visible = true
                 };
 
                 var contextMenu = new ContextMenuStrip();
                 
-                var openItem = new ToolStripMenuItem("Open My Tasks", null, (s, e) => _onOpenRequested?.Invoke());
+                var openItem = new ToolStripMenuItem("Open FocusFlow", null, (s, e) => _onOpenRequested?.Invoke());
                 openItem.Font = new Font(openItem.Font, FontStyle.Bold);
                 contextMenu.Items.Add(openItem);
 
@@ -51,7 +71,7 @@ namespace FocusFlow.Services
 
                 contextMenu.Items.Add(new ToolStripSeparator());
 
-                contextMenu.Items.Add("Exit My Tasks", null, (s, e) => _onExitRequested?.Invoke());
+                contextMenu.Items.Add("Exit FocusFlow", null, (s, e) => _onExitRequested?.Invoke());
 
                 _notifyIcon.ContextMenuStrip = contextMenu;
                 _notifyIcon.DoubleClick += (s, e) => _onOpenRequested?.Invoke();

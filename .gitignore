@@ -15,3 +15,7 @@
 *.sqlite
 .DS_Store
 Thumbs.db
+
+# Installer Output
+installer/Output/
+

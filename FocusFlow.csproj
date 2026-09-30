@@ -9,7 +9,26 @@
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>FocusFlow</AssemblyName>
     <RootNamespace>FocusFlow</RootNamespace>
+
+    <!-- Application Identity & Metadata -->
+    <ApplicationTitle>FocusFlow</ApplicationTitle>
+    <Product>FocusFlow</Product>
+    <Description>FocusFlow - Smart Productivity, Tasks &amp; Pomodoro Focus Timer</Description>
+    <Company>FocusFlow</Company>
+    <Authors>FocusFlow</Authors>
+    <Copyright>Copyright © 2026 FocusFlow</Copyright>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <ApplicationIcon>Assets\focusflow.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\**\*" />
+    <None Update="Assets\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.8" />
